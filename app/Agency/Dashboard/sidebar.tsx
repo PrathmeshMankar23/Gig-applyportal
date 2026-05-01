@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard,
     Briefcase,
@@ -15,6 +15,11 @@ import {
 
 export default function AgencySidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        router.push('/auth/agency-login');
+    };
 
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, path: '/Agency/Dashboard' },
@@ -56,11 +61,14 @@ export default function AgencySidebar() {
 
             {/* Logout Section */}
             <div className="p-4 border-t border-gray-50">
-                <button className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-red-500 hover:bg-red-50 transition-all group">
+                <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-red-500 hover:bg-red-50 transition-all group"
+                >
                     <LogOut className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
                     Logout
                 </button>
             </div>
         </aside>
     );
-}
+}
