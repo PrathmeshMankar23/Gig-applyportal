@@ -27,7 +27,6 @@ export default function AgencySidebar() {
         { name: 'Team Members', icon: Users, path: '/Agency/team' },
         { name: 'Agency Profile', icon: Building2, path: '/Agency/profile' },
         { name: 'My Applications', icon: FileText, path: '/Agency/applications' },
-        { name: 'Notifications', icon: Bell, path: '/Agency/notifications' },
     ];
 
     return (

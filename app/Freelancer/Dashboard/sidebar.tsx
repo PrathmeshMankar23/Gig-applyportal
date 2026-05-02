@@ -18,7 +18,6 @@ const navItems = [
     { label: "Browse Projects", href: "/Freelancer/projects", icon: Briefcase },
     { label: "My Profile", href: "/Freelancer/profile", icon: User },
     { label: "My Applications", href: "/Freelancer/applications", icon: ClipboardList },
-    { label: "Notifications", href: "/Freelancer/notifications", icon: Bell },
 ];
 
 export default function FreelancerSidebar() {

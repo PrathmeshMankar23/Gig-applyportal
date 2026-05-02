@@ -138,7 +138,7 @@ export default function Freelancers() {
 
                         {/* Profile Info */}
                         <div className="space-y-5">
-                            <div className="w-16 h-16 rounded-[22px] bg-slate-900 flex items-center justify-center text-white text-2xl font-bold shadow-xl shadow-gray-200">
+                            <div className="w-16 h-16 rounded-[22px] bg-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-xl shadow-blue-100">
                                 {freelancer.initial}
                             </div>
 
@@ -185,11 +185,10 @@ export default function Freelancers() {
                                 </div>
                             </div>
 
-                            {/* View Portfolio Link (Subtle) */}
-                            <div className="pt-4 mt-2 border-t border-gray-50">
+                            <div className="pt-6 mt-4 border-t border-gray-50">
                                 <Link
-                                    href={`/portfolio?id=${freelancer.id}`}
-                                    className="flex items-center gap-2 text-emerald-600 font-black text-xs uppercase tracking-widest hover:text-emerald-700 transition-colors"
+                                    href={`/Admin/Dashboard/portfolio?id=${freelancer.id}&from=freelancers`}
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-2 group-hover:translate-y-[-2px]"
                                 >
                                     <User className="w-4 h-4" />
                                     View Detailed Portfolio

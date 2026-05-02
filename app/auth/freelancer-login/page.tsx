@@ -18,6 +18,8 @@ export default function FreelancerLoginPage() {
         // Simulated Freelancer Login
         setTimeout(() => {
             if (email && password) {
+                // Store dummy name for demo
+                localStorage.setItem('freelancer_name', 'Sarah Johnson');
                 router.push('/Freelancer/Dashboard');
             } else {
                 setIsLoading(false);

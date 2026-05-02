@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
     Users,
     Clock,
@@ -11,11 +12,15 @@ import {
     X,
     Briefcase,
     Building2,
-    Search
+    Search,
+    FolderOpen
 } from "lucide-react";
-import Link from 'next/link';
+import { cn } from "@/lib/utils";
+import { useProjects } from "@/context/ProjectContext";
 
 export default function AdminDashboard() {
+    const { projects } = useProjects();
+    
     // State for filtering
     const [statusFilter, setStatusFilter] = useState('All');
     const [typeFilter, setTypeFilter] = useState('All');
@@ -49,10 +54,10 @@ export default function AdminDashboard() {
 
     // Stats Logic
     const stats = [
-        { label: "Total Requests", value: requests.length, icon: Users, color: "text-gray-400" },
-        { label: "Pending", value: requests.filter(r => r.status === 'Pending').length, icon: Clock, color: "text-orange-500" },
-        { label: "Approved", value: requests.filter(r => r.status === 'Approved').length, icon: CheckCircle2, color: "text-emerald-500" },
-        { label: "Rejected", value: requests.filter(r => r.status === 'Rejected').length, icon: XCircle, color: "text-red-500" },
+        { label: "Total Projects", value: projects.length, icon: FolderOpen, color: "text-blue-600", bgColor: "bg-blue-300", borderColor: "border-blue-400", href: "/Admin/Dashboard/projects" },
+        { label: "Total Freelancers", value: 3, icon: Users, color: "text-emerald-600", bgColor: "bg-emerald-300", borderColor: "border-emerald-400", href: "/Admin/Dashboard/freelancers" },
+        { label: "Total Agency", value: 3, icon: Building2, color: "text-purple-600", bgColor: "bg-purple-300", borderColor: "border-purple-400", href: "/Admin/Dashboard/agencies" },
+        { label: "Total Request", value: requests.length, icon: Clock, color: "text-orange-500", bgColor: "bg-orange-300", borderColor: "border-orange-400", href: "/Admin/Dashboard" },
     ];
 
     // Filtering Logic
@@ -87,31 +92,35 @@ export default function AdminDashboard() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, i) => (
-                    <div key={i} className="bg-white p-6 rounded-[28px] border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                    <Link
+                        key={i}
+                        href={stat.href}
+                        className={`p-6 rounded-[32px] border ${stat.bgColor} ${stat.borderColor} shadow-sm transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98] group`}
+                    >
                         <div className="flex justify-between items-start">
                             <div className="space-y-1">
-                                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">{stat.label}</p>
-                                <p className={`text-3xl font-black ${stat.color.includes('gray') ? 'text-gray-900' : stat.color}`}>
+                                <p className="text-gray-900 text-[10px] font-black uppercase tracking-widest group-hover:text-black transition-colors">{stat.label}</p>
+                                <p className="text-4xl font-black text-gray-900">
                                     {stat.value}
                                 </p>
                             </div>
-                            <div className={`p-3 rounded-2xl bg-gray-50 ${stat.color}`}>
-                                <stat.icon className="w-5 h-5" />
+                            <div className={`p-3 rounded-2xl bg-white ${stat.color} shadow-sm group-hover:shadow-md transition-all`}>
+                                <stat.icon className="w-6 h-6" />
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 
             {/* Filter & Search Bar */}
             <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
                 <div className="flex flex-wrap items-center gap-3">
-                    <div className="bg-white p-1.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-1">
+                    <div className="bg-white p-2 rounded-[24px] border border-gray-100 shadow-sm flex items-center gap-1.5">
                         {['All', 'Pending', 'Approved'].map((status) => (
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-2 rounded-xl font-bold text-xs transition-all ${statusFilter === status
+                                className={`px-6 py-3 rounded-2xl font-bold text-sm transition-all ${statusFilter === status
                                     ? 'bg-emerald-600 text-white'
                                     : 'text-gray-500 hover:bg-gray-50'}`}
                             >
@@ -120,12 +129,12 @@ export default function AdminDashboard() {
                         ))}
                     </div>
 
-                    <div className="bg-white p-1.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-1">
+                    <div className="bg-white p-2 rounded-[24px] border border-gray-100 shadow-sm flex items-center gap-1.5">
                         {['All', 'Freelancers', 'Agencies'].map((type) => (
                             <button
                                 key={type}
                                 onClick={() => setTypeFilter(type === 'Freelancers' ? 'freelancer' : type === 'Agencies' ? 'agency' : 'All')}
-                                className={`px-4 py-2 rounded-xl font-bold text-xs transition-all ${(typeFilter === 'freelancer' && type === 'Freelancers') ||
+                                className={`px-6 py-3 rounded-2xl font-bold text-sm transition-all ${(typeFilter === 'freelancer' && type === 'Freelancers') ||
                                     (typeFilter === 'agency' && type === 'Agencies') ||
                                     (typeFilter === 'All' && type === 'All')
                                     ? 'bg-blue-600 text-white'
@@ -137,7 +146,7 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                <div className="relative w-full xl:max-w-xs">
+                <div className="relative w-full xl:max-w-md">
                     <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                         type="text"
@@ -184,16 +193,16 @@ export default function AdminDashboard() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border ${req.status === 'Approved' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                req.status === 'Rejected' ? 'bg-red-50 text-red-600 border-red-100' :
-                                                    'bg-orange-50 text-orange-600 border-orange-100'
+                                            req.status === 'Rejected' ? 'bg-red-50 text-red-600 border-red-100' :
+                                                'bg-orange-50 text-orange-600 border-orange-100'
                                             }`}>
                                             {req.status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <Link
-                                            href={`/portfolio?id=${req.id}`}
-                                            className="inline-flex items-center justify-center w-8 h-8 bg-slate-900 text-white rounded-lg hover:bg-black transition-all shadow-sm"
+                                            href={`/Admin/Dashboard/portfolio?id=${req.id}`}
+                                            className="inline-flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm"
                                         >
                                             <Eye className="w-4 h-4" />
                                         </Link>

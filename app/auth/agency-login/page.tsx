@@ -18,6 +18,7 @@ export default function AgencyLoginPage() {
     // Simulated Agency Authentication
     setTimeout(() => {
       if (email && password) {
+        localStorage.setItem('agencyName', "Creative Studios Inc.");
         router.push('/Agency/Dashboard');
       } else {
         setIsLoading(false);

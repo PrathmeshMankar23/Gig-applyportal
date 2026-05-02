@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import { 
-    Users, 
-    Briefcase, 
-    TrendingUp, 
+import {
+    Users,
+    Briefcase,
+    TrendingUp,
     Clock,
     CheckCircle2,
     MessageSquare,
@@ -34,10 +34,6 @@ export default function AgencyDashboardPage() {
                     <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Agency Dashboard</h1>
                     <p className="text-gray-500 mt-1 font-medium">Overview of your agency's performance and projects</p>
                 </div>
-                <button className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-purple-100">
-                    <Plus className="w-5 h-5" />
-                    New Project
-                </button>
             </div>
 
             {/* Stats Grid */}
@@ -89,10 +85,9 @@ export default function AgencyDashboardPage() {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                                                project.status === 'In Progress' ? 'bg-blue-50 text-blue-600' :
-                                                project.status === 'Review' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'
-                                            }`}>
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${project.status === 'In Progress' ? 'bg-blue-50 text-blue-600' :
+                                                    project.status === 'Review' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'
+                                                }`}>
                                                 {project.status}
                                             </span>
                                         </div>

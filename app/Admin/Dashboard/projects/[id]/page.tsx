@@ -6,33 +6,21 @@ import {
     ArrowLeft,
     Edit,
     Play,
-    Calendar,
-    DollarSign,
-    BarChart3,
-    Users,
     X,
     Upload,
     ChevronDown
 } from "lucide-react";
 
+import { useProjects } from '@/context/ProjectContext';
+import { ProjectDetailView } from '@/components/ProjectDetailView';
+
 export default function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = React.use(params);
-    const id = resolvedParams.id;
+    const id = parseInt(resolvedParams.id);
+    const { projects, updateProject } = useProjects();
+    const project = projects.find(p => p.id === id);
+    
     const [mounted, setMounted] = useState(false);
-
-    // Project State
-    const [project, setProject] = useState({
-        title: "E-commerce Website Redesign",
-        client: "TechStore Inc.",
-        budget: "15000",
-        deadline: "2026-06-15",
-        category: "web",
-        priority: "High",
-        skills: "React, Node.js, MongoDB",
-        description: "Full redesign of the existing e-commerce platform.",
-        progress: 65,
-        applications: 12
-    });
 
     // Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -43,75 +31,54 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ id: s
     }, []);
 
     if (!mounted) return null;
+    if (!project) return (
+        <div className="py-20 text-center">
+            <h2 className="text-2xl font-bold text-gray-900">Project not found</h2>
+            <Link href="/Admin/Dashboard/projects" className="text-emerald-600 font-bold underline mt-4 inline-block">Back to Projects</Link>
+        </div>
+    );
 
     const handleEditProject = (e: React.FormEvent) => {
         e.preventDefault();
-        setProject({ ...editingProject });
+        updateProject(editingProject);
         setIsEditModalOpen(false);
         setEditingProject(null);
     };
 
     return (
         <div className="space-y-6">
-            {/* Back Button */}
-            <Link
-                href="/Admin/Dashboard/projects"
-                className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4 w-fit"
-            >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Projects
-            </Link>
+            {/* Top Actions */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                <Link
+                    href="/Admin/Dashboard/projects"
+                    className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors w-fit font-bold"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Projects
+                </Link>
 
-            {/* Main Header Card */}
-            <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
-                <div className="flex justify-between items-start mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{project.title}</h1>
-                        <p className="text-gray-400 font-medium mt-1">{project.client}</p>
-                    </div>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => {
+                            setEditingProject({ ...project });
+                            setIsEditModalOpen(true);
+                        }}
+                        className="flex items-center gap-2 px-6 py-2.5 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+                    >
+                        <Edit className="w-4 h-4" /> Edit Project
+                    </button>
 
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => {
-                                setEditingProject({ ...project });
-                                setIsEditModalOpen(true);
-                            }}
-                            className="flex items-center gap-2 px-6 py-2.5 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all"
-                        >
-                            <Edit className="w-4 h-4" /> Edit Details
-                        </button>
-
-                        <Link
-                            href={`/Admin/Dashboard/projects/${id}/track`}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
-                        >
-                            <Play className="w-4 h-4 fill-current" /> Track Progress
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <StatCard icon={DollarSign} label="Budget" value={`$${project.budget}`} color="blue" />
-                    <StatCard icon={Calendar} label="Deadline" value={project.deadline} color="purple" />
-                    <StatCard icon={BarChart3} label="Progress" value={`${project.progress}%`} color="emerald" />
-                    <StatCard icon={Users} label="Applications" value={project.applications.toString()} color="orange" />
+                    <Link
+                        href={`/Admin/Dashboard/projects/${id}/track`}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
+                    >
+                        <Play className="w-4 h-4 fill-current" /> Track Progress
+                    </Link>
                 </div>
             </div>
 
-            {/* Progress Bar Section */}
-            <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">Overall Progress</h3>
-                    <span className="text-2xl font-bold text-gray-900">{project.progress}%</span>
-                </div>
-                <div className="h-4 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                    <div
-                        className="h-full bg-emerald-500 rounded-full transition-all duration-700"
-                        style={{ width: `${project.progress}%` }}
-                    />
-                </div>
-            </div>
+            {/* Shared Detail View */}
+            <ProjectDetailView project={project} role="admin" />
 
             {/* Edit Modal */}
             <ProjectModal 
@@ -123,25 +90,6 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ id: s
             >
                 <ProjectForm data={editingProject} setData={setEditingProject} />
             </ProjectModal>
-        </div>
-    );
-}
-
-// Internal Components
-function StatCard({ icon: Icon, label, value, color }: any) {
-    const colors: any = {
-        blue: "bg-blue-50 text-blue-600 border-blue-100",
-        purple: "bg-purple-50 text-purple-600 border-purple-100",
-        emerald: "bg-emerald-50 text-emerald-600 border-emerald-100",
-        orange: "bg-orange-50 text-orange-600 border-orange-100"
-    };
-    return (
-        <div className={`${colors[color]} p-6 rounded-2xl border`}>
-            <div className="flex items-center gap-2 mb-2">
-                <Icon className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
-            </div>
-            <p className="text-2xl font-bold">{value}</p>
         </div>
     );
 }

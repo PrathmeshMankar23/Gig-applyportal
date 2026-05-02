@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   FileText,
   Search,
@@ -15,6 +16,7 @@ import {
 type PortalType = 'agency' | 'freelancer';
 
 export default function MyApplicationsPage() {
+  const router = useRouter();
   const [portalType] = useState<PortalType>('agency');
   const isAgency = portalType === 'agency';
 
@@ -64,7 +66,10 @@ export default function MyApplicationsPage() {
           You haven't applied to any projects yet. Start browsing available opportunities to grow your portfolio.
         </p>
 
-        <button className={`${theme.primary} ${theme.hover} text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg ${theme.shadow} flex items-center gap-2 group`}>
+        <button 
+          onClick={() => router.push('/Agency/projects')}
+          className={`${theme.primary} ${theme.hover} text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg ${theme.shadow} flex items-center gap-2 group`}
+        >
           {isAgency ? <PlusCircle className="w-5 h-5" /> : <Search className="w-5 h-5" />}
           Browse Projects
           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

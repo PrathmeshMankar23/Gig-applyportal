@@ -130,7 +130,7 @@ export default function Agencies() {
                         {/* Profile Info */}
                         <div className="space-y-5">
                             {/* Gradient Avatar */}
-                            <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-xl shadow-indigo-100">
+                            <div className="w-16 h-16 rounded-[22px] bg-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-xl shadow-purple-100">
                                 {agency.initial}
                             </div>
 
@@ -182,8 +182,8 @@ export default function Agencies() {
 
                             {/* Action Button */}
                             <Link
-                                href={`/portfolio?id=${agency.id}`}
-                                className="w-full bg-slate-900 hover:bg-black text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-gray-200 mt-6 flex items-center justify-center gap-2 group-hover:translate-y-[-2px]"
+                                href={`/Admin/Dashboard/portfolio?id=${agency.id}&from=agencies`}
+                                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-purple-100 mt-6 flex items-center justify-center gap-2 group-hover:translate-y-[-2px]"
                             >
                                 <Building2 className="w-4 h-4" />
                                 View Full Profile

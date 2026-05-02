@@ -65,26 +65,30 @@ const profiles: any = {
 function PortfolioContent() {
     const searchParams = useSearchParams();
     const id = searchParams.get('id') || 'sarah';
+    const from = searchParams.get('from') || 'dashboard';
     const profile = profiles[id] || profiles['sarah'];
 
-    return (
-        <div className="min-h-screen bg-slate-50 font-sans text-black pb-20">
-            {/* Navigation Header */}
-            <header className="bg-white border-b border-gray-100 sticky top-0 z-50 px-8 h-20 flex items-center justify-between">
-                <Link href="/Admin/Dashboard" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                    Back
-                </Link>
-                <div className="flex items-center gap-4">
-                    <button className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
-                        Hire Now
-                    </button>
-                </div>
-            </header>
+    const backPath = from === 'freelancers' 
+        ? '/Admin/Dashboard/freelancers' 
+        : from === 'agencies' 
+            ? '/Admin/Dashboard/agencies' 
+            : '/Admin/Dashboard';
 
-            <div className="max-w-6xl mx-auto px-6 mt-12 space-y-12">
+    return (
+        <div className="font-sans text-black pb-20">
+            {/* Simple Back Button */}
+            <div className="mb-8">
+                <Link href={backPath} className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold transition-colors group">
+                    <div className="p-2 bg-white rounded-xl border border-gray-100 group-hover:border-gray-200 shadow-sm transition-all">
+                        <ArrowLeft className="w-5 h-5" />
+                    </div>
+                    <span>Back to {from.charAt(0).toUpperCase() + from.slice(1)}</span>
+                </Link>
+            </div>
+
+            <div className="space-y-12">
                 {/* Profile Hero Card */}
-                <div className="bg-white rounded-[40px] p-10 md:p-16 border border-gray-100 shadow-xl shadow-gray-200/50 flex flex-col md:flex-row gap-12 items-center text-center md:text-left">
+                <div className="bg-white rounded-[40px] p-10 md:p-16 border border-gray-100 shadow-sm flex flex-col md:flex-row gap-12 items-center text-center md:text-left">
                     <div className={`w-48 h-48 rounded-[32px] flex items-center justify-center text-white text-6xl font-bold shadow-2xl shrink-0 ${
                         profile.type === 'Freelancer' ? 'bg-gradient-to-tr from-blue-600 to-indigo-600' : 'bg-gradient-to-tr from-purple-600 to-pink-600'
                     }`}>
@@ -181,7 +185,7 @@ function PortfolioContent() {
 
 export default function PortfolioPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Clock className="animate-spin" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Clock className="animate-spin text-emerald-600" /></div>}>
             <PortfolioContent />
         </Suspense>
     );

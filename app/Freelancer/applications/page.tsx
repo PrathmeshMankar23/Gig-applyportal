@@ -44,7 +44,7 @@ export default function MyApplications() {
 
           {/* Functional Navigation Button */}
           <button
-            onClick={() => router.push("/Freelancer/Projects")}
+            onClick={() => router.push("/Freelancer/projects")}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-2xl transition-all shadow-lg shadow-blue-100"
           >
             Browse Projects
