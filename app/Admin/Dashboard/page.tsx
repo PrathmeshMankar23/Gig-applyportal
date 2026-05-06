@@ -13,13 +13,16 @@ import {
     Briefcase,
     Building2,
     Search,
-    FolderOpen
+    FolderOpen,
+    ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProjects } from "@/context/ProjectContext";
+import { useApplications } from "@/context/ApplicationContext";
 
 export default function AdminDashboard() {
     const { projects } = useProjects();
+    const { applications } = useApplications();
     
     // State for filtering
     const [statusFilter, setStatusFilter] = useState('All');
@@ -57,7 +60,7 @@ export default function AdminDashboard() {
         { label: "Total Projects", value: projects.length, icon: FolderOpen, color: "text-blue-600", bgColor: "bg-blue-300", borderColor: "border-blue-400", href: "/Admin/Dashboard/projects" },
         { label: "Total Freelancers", value: 3, icon: Users, color: "text-emerald-600", bgColor: "bg-emerald-300", borderColor: "border-emerald-400", href: "/Admin/Dashboard/freelancers" },
         { label: "Total Agency", value: 3, icon: Building2, color: "text-purple-600", bgColor: "bg-purple-300", borderColor: "border-purple-400", href: "/Admin/Dashboard/agencies" },
-        { label: "Total Request", value: requests.length, icon: Clock, color: "text-orange-500", bgColor: "bg-orange-300", borderColor: "border-orange-400", href: "/Admin/Dashboard" },
+        { label: "Total Request", value: applications.length, icon: Clock, color: "text-orange-500", bgColor: "bg-orange-300", borderColor: "border-orange-400", href: "/Admin/Dashboard/requests" },
     ];
 
     // Filtering Logic
@@ -112,49 +115,71 @@ export default function AdminDashboard() {
                 ))}
             </div>
 
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="bg-white p-2 rounded-[24px] border border-gray-100 shadow-sm flex items-center gap-1.5">
-                        {['All', 'Pending', 'Approved'].map((status) => (
-                            <button
-                                key={status}
-                                onClick={() => setStatusFilter(status)}
-                                className={`px-6 py-3 rounded-2xl font-bold text-sm transition-all ${statusFilter === status
-                                    ? 'bg-emerald-600 text-white'
-                                    : 'text-gray-500 hover:bg-gray-50'}`}
-                            >
-                                {status}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="bg-white p-2 rounded-[24px] border border-gray-100 shadow-sm flex items-center gap-1.5">
-                        {['All', 'Freelancers', 'Agencies'].map((type) => (
-                            <button
-                                key={type}
-                                onClick={() => setTypeFilter(type === 'Freelancers' ? 'freelancer' : type === 'Agencies' ? 'agency' : 'All')}
-                                className={`px-6 py-3 rounded-2xl font-bold text-sm transition-all ${(typeFilter === 'freelancer' && type === 'Freelancers') ||
-                                    (typeFilter === 'agency' && type === 'Agencies') ||
-                                    (typeFilter === 'All' && type === 'All')
-                                    ? 'bg-blue-600 text-white'
-                                    : 'text-gray-500 hover:bg-gray-50'}`}
-                            >
-                                {type}
-                            </button>
-                        ))}
+            {/* Project Requests Section */}
+            <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-900 tracking-tight">Project Requests</h2>
+                        <p className="text-gray-500 font-medium text-xs mt-1">Review and manage incoming registration requests</p>
                     </div>
                 </div>
 
-                <div className="relative w-full xl:max-w-md">
-                    <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search users..."
-                        className="w-full pl-11 pr-4 py-3 bg-white border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all text-sm font-medium"
-                    />
+                {/* Filter & Search Bar - Unified Line */}
+                <div className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-[32px] border border-gray-100 shadow-sm">
+                    {/* Status Dropdown */}
+                    <div className="relative group">
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="appearance-none bg-gray-50 px-8 py-3.5 pr-14 rounded-2xl border border-gray-100 text-slate-800 font-black text-xs outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer hover:bg-white"
+                        >
+                            <option value="All">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                        </select>
+                        <ChevronRight className="w-4 h-4 absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none group-hover:text-slate-900 transition-colors" />
+                    </div>
+
+                    {/* Type Dropdown */}
+                    <div className="relative group">
+                        <select
+                            value={typeFilter === 'All' ? 'All' : typeFilter === 'freelancer' ? 'Freelancers' : 'Agencies'}
+                            onChange={(e) => setTypeFilter(e.target.value === 'Freelancers' ? 'freelancer' : e.target.value === 'Agencies' ? 'agency' : 'All')}
+                            className="appearance-none bg-gray-50 px-8 py-3.5 pr-14 rounded-2xl border border-gray-100 text-slate-800 font-black text-xs outline-none focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer hover:bg-white"
+                        >
+                            <option value="All">All Categories</option>
+                            <option value="Freelancers">Freelancers</option>
+                            <option value="Agencies">Agencies</option>
+                        </select>
+                        <ChevronRight className="w-4 h-4 absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none group-hover:text-slate-900 transition-colors" />
+                    </div>
+
+                    {/* Search Input */}
+                    <div className="relative flex-1 min-w-[200px]">
+                        <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search by name or email..."
+                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:bg-white outline-none transition-all text-xs font-bold"
+                        />
+                    </div>
+
+                    {/* Clear Button */}
+                    {(statusFilter !== 'All' || typeFilter !== 'All' || searchQuery !== "") && (
+                        <button 
+                            onClick={() => {
+                                setStatusFilter('All');
+                                setTypeFilter('All');
+                                setSearchQuery("");
+                            }}
+                            className="flex items-center gap-2 px-6 py-3.5 bg-red-50 text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-100 transition-all border border-red-100 shadow-sm"
+                        >
+                            <X className="w-4 h-4" />
+                            Clear
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -176,8 +201,7 @@ export default function AdminDashboard() {
                             {filteredRequests.map((req) => (
                                 <tr key={req.id} className="hover:bg-gray-50/30 transition-colors group">
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${req.type === 'freelancer' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'
-                                            }`}>
+                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${req.type === 'freelancer' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
                                             {req.type === 'freelancer' ? <Briefcase className="w-3 h-3" /> : <Building2 className="w-3 h-3" />}
                                             {req.type}
                                         </span>

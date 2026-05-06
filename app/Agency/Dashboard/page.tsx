@@ -12,26 +12,60 @@ import {
     BarChart3
 } from "lucide-react";
 
-export default function AgencyDashboardPage() {
-    const stats = [
-        { label: "Active Projects", value: "8", icon: Briefcase, color: "text-blue-600", bg: "bg-blue-50" },
-        { label: "Team Members", value: "12", icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
-        { label: "Completion Rate", value: "94%", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
-        { label: "Avg. Response", value: "2h", icon: Clock, color: "text-orange-500", bg: "bg-orange-50" },
-    ];
+import { useApplications, Application } from "@/context/ApplicationContext";
+import ProjectWorkspace from "@/components/ProjectWorkspace";
+import { cn } from "@/lib/utils";
+import { ChevronRight } from 'lucide-react';
 
-    const recentProjects = [
-        { name: "E-commerce Redesign", client: "TechStore Inc.", status: "In Progress", progress: 65, team: 4 },
-        { name: "Mobile Banking App", client: "Global Bank", status: "Planning", progress: 15, team: 3 },
-        { name: "CRM Integration", client: "SalesForce Pro", status: "Review", progress: 90, team: 2 },
+export default function AgencyDashboardPage() {
+    const { applications } = useApplications();
+    const [selectedApp, setSelectedApp] = React.useState<Application | null>(null);
+    const [isWorkspaceOpen, setIsWorkspaceOpen] = React.useState(false);
+
+    // Filter applications for Creative Studios (Mocking current user)
+    const myApplications = applications.filter(app => app.applicantName === "Creative Studios Inc.");
+
+    const stats = [
+        { label: "Active Projects", value: myApplications.filter(a => a.status === 'Selected').length.toString(), icon: Briefcase, color: "text-blue-600", bg: "bg-blue-50" },
+        { label: "Pending Requests", value: myApplications.filter(a => a.status === 'Pending').length.toString(), icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-8 animate-in fade-in duration-500 relative overflow-hidden">
+            {/* Workspace Side Panel */}
+            <div className={cn(
+                "fixed inset-y-0 right-0 w-full lg:w-[500px] bg-white shadow-2xl z-[100] transform transition-transform duration-500 ease-in-out border-l border-gray-100 flex flex-col",
+                isWorkspaceOpen ? "translate-x-0" : "translate-x-full"
+            )}>
+                {selectedApp && (
+                    <>
+                        <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-slate-50/30">
+                            <div>
+                                <h2 className="text-xl font-black text-gray-900">{selectedApp.projectTitle}</h2>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Project Workspace</p>
+                            </div>
+                            <button
+                                onClick={() => setIsWorkspaceOpen(false)}
+                                className="p-3 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-gray-900 hover:shadow-md transition-all"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                            <ProjectWorkspace
+                                application={selectedApp}
+                                currentUserRole="Agency"
+                                currentUserName="Creative Studios Inc."
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+
             {/* Header */}
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Agency Dashboard</h1>
+                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Agency Dashboard</h1>
                     <p className="text-gray-500 mt-1 font-medium">Overview of your agency's performance and projects</p>
                 </div>
             </div>
@@ -57,38 +91,48 @@ export default function AgencyDashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Projects Section */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
-                        <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-xl font-bold text-gray-900">Active Projects</h3>
-                            <button className="text-sm font-bold text-purple-600 hover:underline">View All</button>
+                    <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm">
+                        <div className="flex justify-between items-center mb-10">
+                            <h3 className="text-2xl font-black text-gray-900">Your Active Proposals</h3>
                         </div>
-                        <div className="space-y-6">
-                            {recentProjects.map((project, i) => (
-                                <div key={i} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-2xl transition-colors border border-transparent hover:border-gray-100">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center font-bold text-gray-400">
-                                            {project.name[0]}
+                        <div className="space-y-4">
+                            {myApplications.map((app) => (
+                                <div
+                                    key={app.id}
+                                    onClick={() => {
+                                        setSelectedApp(app);
+                                        setIsWorkspaceOpen(true);
+                                    }}
+                                    className="flex items-center justify-between p-6 bg-white border border-gray-100 rounded-[32px] hover:border-purple-200 hover:shadow-xl hover:shadow-purple-500/5 transition-all cursor-pointer group"
+                                >
+                                    <div className="flex items-center gap-6">
+                                        <div className={cn(
+                                            "w-16 h-16 rounded-[20px] flex items-center justify-center font-black transition-colors border",
+                                            app.status === 'Selected'
+                                                ? "bg-purple-50 text-purple-600 border-purple-100 shadow-lg shadow-purple-500/10"
+                                                : "bg-slate-50 text-slate-300 border-gray-100 group-hover:bg-purple-50 group-hover:text-purple-500"
+                                        )}>
+                                            {app.projectTitle[0]}
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-gray-900">{project.name}</h4>
-                                            <p className="text-xs text-gray-400 font-medium">{project.client}</p>
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="font-black text-gray-900 text-lg group-hover:text-purple-600 transition-colors">{app.projectTitle}</h4>
+                                                {app.status === 'Selected' && (
+                                                    <span className="text-[8px] font-black bg-purple-600 text-white px-2 py-0.5 rounded-md uppercase tracking-widest animate-pulse">Selected</span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-0.5">Admin Review</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-8">
-                                        <div className="text-right hidden md:block">
-                                            <p className="text-xs font-bold text-gray-400 uppercase">Progress</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-purple-500" style={{ width: `${project.progress}%` }} />
-                                                </div>
-                                                <span className="text-xs font-bold text-gray-900">{project.progress}%</span>
-                                            </div>
-                                        </div>
                                         <div className="text-right">
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${project.status === 'In Progress' ? 'bg-blue-50 text-blue-600' :
-                                                    project.status === 'Review' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'
-                                                }`}>
-                                                {project.status}
+                                            <span className={cn(
+                                                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                                app.status === 'Selected' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                                    app.status === 'Rejected' ? "bg-red-50 text-red-600 border-red-100" :
+                                                        "bg-orange-50 text-orange-600 border-orange-100"
+                                            )}>
+                                                {app.status}
                                             </span>
                                         </div>
                                     </div>

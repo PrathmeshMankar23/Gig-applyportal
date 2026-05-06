@@ -2,6 +2,13 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+export interface ProjectUpdate {
+    id: number;
+    text: string;
+    date: string;
+    sender: string;
+}
+
 export interface Project {
     id: number;
     title: string;
@@ -17,6 +24,7 @@ export interface Project {
     progress: number;
     posted: string;
     applicants: number;
+    updates?: ProjectUpdate[];
 }
 
 interface ProjectContextType {
@@ -26,6 +34,7 @@ interface ProjectContextType {
     updateProject: (project: Project) => void;
     deleteProject: (id: number) => void;
     addCategory: (category: string) => void;
+    addProjectUpdate: (projectId: number, text: string, sender: string) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -83,6 +92,55 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         }
     ]);
 
+    const [hasLoaded, setHasLoaded] = useState(false);
+
+    // 1. Load from LocalStorage on Mount
+    useEffect(() => {
+        const savedProjects = localStorage.getItem('app_projects');
+        const savedCategories = localStorage.getItem('app_categories');
+        
+        if (savedProjects) {
+            try {
+                setProjects(JSON.parse(savedProjects));
+            } catch (e) {
+                console.error("Failed to parse projects", e);
+            }
+        }
+        
+        if (savedCategories) {
+            try {
+                setCategories(JSON.parse(savedCategories));
+            } catch (e) {
+                console.error("Failed to parse categories", e);
+            }
+        }
+        
+        setHasLoaded(true);
+    }, []);
+
+    // 1.5 Listen for Cross-Tab Changes
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'app_projects' && e.newValue) {
+                setProjects(JSON.parse(e.newValue));
+            }
+            if (e.key === 'app_categories' && e.newValue) {
+                setCategories(JSON.parse(e.newValue));
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
+
+    // 2. Save to LocalStorage on Change (ONLY after initial load)
+    useEffect(() => {
+        if (hasLoaded) {
+            localStorage.setItem('app_projects', JSON.stringify(projects));
+            localStorage.setItem('app_categories', JSON.stringify(categories));
+        }
+    }, [projects, categories, hasLoaded]);
+
     const addProject = (projectData: Omit<Project, 'id' | 'posted' | 'applicants'>) => {
         const newProject: Project = {
             ...projectData,
@@ -90,15 +148,15 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             posted: new Date().toISOString().split('T')[0],
             applicants: 0
         };
-        setProjects([...projects, newProject]);
+        setProjects(prev => [...prev, newProject]);
     };
 
     const updateProject = (updatedProject: Project) => {
-        setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
+        setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
     };
 
     const deleteProject = (id: number) => {
-        setProjects(projects.filter(p => p.id !== id));
+        setProjects(prev => prev.filter(p => p.id !== id));
     };
 
     const addCategory = (category: string) => {
@@ -107,8 +165,23 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const addProjectUpdate = (projectId: number, text: string, sender: string) => {
+        setProjects(prev => prev.map(p => {
+            if (p.id === projectId) {
+                const newUpdate: ProjectUpdate = {
+                    id: Date.now(),
+                    text,
+                    date: new Date().toLocaleString(),
+                    sender
+                };
+                return { ...p, updates: [...(p.updates || []), newUpdate] };
+            }
+            return p;
+        }));
+    };
+
     return (
-        <ProjectContext.Provider value={{ projects, categories, addProject, updateProject, deleteProject, addCategory }}>
+        <ProjectContext.Provider value={{ projects, categories, addProject, updateProject, deleteProject, addCategory, addProjectUpdate }}>
             {children}
         </ProjectContext.Provider>
     );

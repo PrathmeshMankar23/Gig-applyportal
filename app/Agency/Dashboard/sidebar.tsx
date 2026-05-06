@@ -10,7 +10,8 @@ import {
     Building2,
     FileText,
     Bell,
-    LogOut
+    LogOut,
+    FolderCheck
 } from 'lucide-react';
 
 export default function AgencySidebar() {
@@ -24,6 +25,7 @@ export default function AgencySidebar() {
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, path: '/Agency/Dashboard' },
         { name: 'Browse Projects', icon: Briefcase, path: '/Agency/projects' },
+        { name: 'Active Projects', icon: FolderCheck, path: '/Agency/active-projects' },
         { name: 'Team Members', icon: Users, path: '/Agency/team' },
         { name: 'Agency Profile', icon: Building2, path: '/Agency/profile' },
         { name: 'My Applications', icon: FileText, path: '/Agency/applications' },

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useProjects } from '@/context/ProjectContext';
 
-export default function ProjectTrackingPage({ params }: { params: Promise<{ id: string }> }) {
+export default function AgencyProjectTrackingPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = React.use(params);
     const id = resolvedParams.id;
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,7 +78,7 @@ export default function ProjectTrackingPage({ params }: { params: Promise<{ id: 
     const handleAddUpdate = (e: React.FormEvent) => {
         e.preventDefault();
         if (!updateText.trim()) return;
-        addProjectUpdate(parseInt(id), updateText, "Admin");
+        addProjectUpdate(parseInt(id), updateText, "Agency");
         setUpdateText("");
         showNotification("Public update posted successfully!");
     };
@@ -98,9 +98,9 @@ export default function ProjectTrackingPage({ params }: { params: Promise<{ id: 
             )}
 
             {/* Back Button */}
-            <Link href="/Admin/Dashboard/projects" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4 w-fit">
+            <Link href="/Agency/active-projects" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4 w-fit">
                 <ArrowLeft className="w-4 h-4" />
-                Back to Projects
+                Back to Active Projects
             </Link>
 
             {/* Header / Overall Progress Card */}

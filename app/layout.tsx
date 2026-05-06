@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { ProjectProvider } from "@/context/ProjectContext";
+import { ApplicationProvider } from "@/context/ApplicationContext";
 
 export default function RootLayout({
   children,
@@ -39,7 +40,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ProjectProvider>
-            {children}
+            <ApplicationProvider>
+              {children}
+            </ApplicationProvider>
           </ProjectProvider>
         </ThemeProvider>
       </body>

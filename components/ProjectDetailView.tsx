@@ -9,7 +9,8 @@ import {
     Briefcase,
     Clock,
     Tag,
-    Trophy
+    Trophy,
+    Bell
 } from "lucide-react";
 
 import { ApplyModal } from './ApplyModal';
@@ -28,6 +29,7 @@ interface ProjectDetailViewProps {
         applicants: number;
         posted: string;
         status: string;
+        updates?: { id: number, text: string, date: string }[];
     };
     role: 'admin' | 'freelancer' | 'agency';
 }
@@ -100,6 +102,28 @@ export function ProjectDetailView({ project, role }: ProjectDetailViewProps) {
                             {project.description}
                         </p>
                     </div>
+
+                    {project.updates && project.updates.length > 0 && (
+                        <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                                <div className={`p-2 rounded-lg ${accentColor} text-white`}>
+                                    <Bell className="w-5 h-5" />
+                                </div>
+                                Public Announcements
+                            </h3>
+                            <div className="space-y-4">
+                                {project.updates.slice().reverse().map((update: any) => (
+                                    <div key={update.id} className="p-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-sm hover:border-gray-200 transition-colors">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className={`px-2 py-1 rounded-md ${colors[themeColor]} font-black text-[9px] uppercase tracking-widest`}>{update.sender || 'Admin'}</div>
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{update.date}</span>
+                                        </div>
+                                        <p className="text-gray-800 leading-relaxed font-bold text-sm whitespace-pre-wrap">{update.text}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm">
                         <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">

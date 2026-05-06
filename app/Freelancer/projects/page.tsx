@@ -13,20 +13,33 @@ import {
 } from "lucide-react";
 
 import { useProjects } from "@/context/ProjectContext";
+import { useApplications } from "@/context/ApplicationContext";
 import { ApplyModal } from "@/components/ApplyModal";
 
 export default function AvailableProjects() {
   const { projects, categories } = useProjects();
+  const { applications } = useApplications();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("All Categories");
   const [applyModal, setApplyModal] = React.useState<{isOpen: boolean, title: string}>({ isOpen: false, title: "" });
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const appliedProjectIds = applications
+    .filter(app => app.applicantName === "Sarah Johnson")
+    .map(app => app.projectId);
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.skills.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (project.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.skills || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "All Categories" ||
-      project.category.toLowerCase() === categoryFilter.toLowerCase();
-    return matchesSearch && matchesCategory;
+      (project.category || "").toLowerCase() === categoryFilter.toLowerCase();
+    const notApplied = !appliedProjectIds.includes(project.id);
+    
+    return matchesSearch && matchesCategory && notApplied;
   });
 
   return (
@@ -40,9 +53,17 @@ export default function AvailableProjects() {
         Back to Dashboard
       </Link>
       {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Available Projects</h1>
-        <p className="text-gray-500 font-medium">Browse and apply to projects that match your skills</p>
+      <div className="mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Available Projects</h1>
+          <p className="text-gray-500 font-medium">Browse and apply to projects that match your skills</p>
+        </div>
+        {mounted && (
+          <div className="bg-white px-6 py-3 rounded-2xl border border-gray-100 shadow-sm">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Verified</p>
+            <p className="text-2xl font-black text-blue-600">{projects.length} Projects</p>
+          </div>
+        )}
       </div>
 
       {/* Filter Bar */}
@@ -71,7 +92,7 @@ export default function AvailableProjects() {
 
       {/* Projects List */}
       <div className="space-y-6">
-        {filteredProjects.map((project) => (
+        {mounted && filteredProjects.map((project) => (
           <div key={project.id} className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             {/* Title and Category */}
             <div className="flex justify-between items-start mb-4">

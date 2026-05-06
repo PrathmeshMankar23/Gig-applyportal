@@ -9,7 +9,8 @@ import {
     FolderOpen,
     Users,
     UserCircle2,
-    LogOut
+    LogOut,
+    Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ const navItems = [
     { label: "Projects", href: "/Admin/Dashboard/projects", icon: FolderOpen },
     { label: "Freelancers", href: "/Admin/Dashboard/freelancers", icon: Users },
     { label: "Agencies", href: "/Admin/Dashboard/agencies", icon: UserCircle2 },
+    { label: "Requests", href: "/Admin/Dashboard/requests", icon: Clock },
 ];
 
 export default function AdminSidebar() {

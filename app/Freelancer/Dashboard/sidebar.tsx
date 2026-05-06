@@ -9,13 +9,15 @@ import {
     User,
     ClipboardList,
     Bell,
-    LogOut
+    LogOut,
+    FolderCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
     { label: "Dashboard", href: "/Freelancer/Dashboard", icon: Home },
     { label: "Browse Projects", href: "/Freelancer/projects", icon: Briefcase },
+    { label: "Active Projects", href: "/Freelancer/active-projects", icon: FolderCheck },
     { label: "My Profile", href: "/Freelancer/profile", icon: User },
     { label: "My Applications", href: "/Freelancer/applications", icon: ClipboardList },
 ];

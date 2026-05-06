@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { X, Upload, Check, ArrowLeft } from 'lucide-react';
+import { useApplications } from '@/context/ApplicationContext';
 
 interface ApplyModalProps {
     isOpen: boolean;
@@ -11,16 +12,36 @@ interface ApplyModalProps {
 }
 
 export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalProps) {
+    const { addApplication } = useApplications();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    
+    const [formData, setFormData] = useState({
+        coverLetter: '',
+        budget: '',
+        duration: '',
+        portfolioUrl: '',
+        experience: ''
+    });
+
     const themeColor = role === 'freelancer' ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-100' : 'bg-purple-600 hover:bg-purple-700 shadow-purple-100';
 
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        addApplication({
+            projectId: 0, // In a real app, this would be passed as a prop
+            projectTitle: projectTitle,
+            applicantName: role === 'freelancer' ? "John Doe" : "Agency Name", // Mocked for now
+            applicantRole: role,
+            email: "john@example.com", // Mocked for now
+            budget: formData.budget,
+            duration: formData.duration,
+            coverLetter: formData.coverLetter,
+        });
+
         setIsSubmitted(true);
         setTimeout(() => {
             setIsSubmitted(false);
@@ -64,6 +85,8 @@ export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalPr
                             <textarea 
                                 required
                                 rows={6}
+                                value={formData.coverLetter}
+                                onChange={(e) => setFormData({...formData, coverLetter: e.target.value})}
                                 className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-medium text-gray-900 resize-none shadow-sm"
                                 placeholder="Explain why you're the best fit for this project..."
                             />
@@ -75,6 +98,8 @@ export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalPr
                                 <input 
                                     required
                                     type="number"
+                                    value={formData.budget}
+                                    onChange={(e) => setFormData({...formData, budget: e.target.value})}
                                     className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-bold text-gray-900 shadow-sm"
                                     placeholder="15000"
                                 />
@@ -84,6 +109,8 @@ export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalPr
                                 <input 
                                     required
                                     type="text"
+                                    value={formData.duration}
+                                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
                                     className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-bold text-gray-900 shadow-sm"
                                     placeholder="e.g., 6 weeks"
                                 />
@@ -94,6 +121,8 @@ export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalPr
                             <label className="block text-sm font-black text-gray-900 mb-3 uppercase tracking-widest">Portfolio URL</label>
                             <input 
                                 type="url"
+                                value={formData.portfolioUrl}
+                                onChange={(e) => setFormData({...formData, portfolioUrl: e.target.value})}
                                 className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-bold text-gray-900 shadow-sm"
                                 placeholder="https://yourportfolio.com"
                             />
@@ -104,6 +133,8 @@ export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalPr
                             <textarea 
                                 required
                                 rows={4}
+                                value={formData.experience}
+                                onChange={(e) => setFormData({...formData, experience: e.target.value})}
                                 className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-medium text-gray-900 resize-none shadow-sm"
                                 placeholder="Describe your relevant experience and past projects..."
                             />

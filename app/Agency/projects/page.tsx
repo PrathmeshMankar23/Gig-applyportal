@@ -13,20 +13,34 @@ import {
 } from 'lucide-react';
 
 import { useProjects } from '@/context/ProjectContext';
+import { useApplications } from '@/context/ApplicationContext';
 import { ApplyModal } from '@/components/ApplyModal';
 
 export default function AgencyProjectsPage() {
   const { projects, categories } = useProjects();
+  const { applications } = useApplications();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("All Categories");
   const [applyModal, setApplyModal] = React.useState<{isOpen: boolean, title: string}>({ isOpen: false, title: "" });
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+
+  const appliedProjectIds = applications
+    .filter(app => app.applicantName === "Creative Studios Inc.")
+    .map(app => app.projectId);
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.skills.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (project.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.skills || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "All Categories" ||
-      project.category.toLowerCase() === categoryFilter.toLowerCase();
-    return matchesSearch && matchesCategory;
+      (project.category || "").toLowerCase() === categoryFilter.toLowerCase();
+    const notApplied = !appliedProjectIds.includes(project.id);
+    
+    return matchesSearch && matchesCategory && notApplied;
   });
 
   return (
@@ -69,7 +83,7 @@ export default function AgencyProjectsPage() {
 
       {/* Projects List */}
       <div className="space-y-6">
-        {filteredProjects.map((project) => (
+        {mounted && filteredProjects.map((project) => (
           <div
             key={project.id}
             className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-purple-100/50 transition-all group"
