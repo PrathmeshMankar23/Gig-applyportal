@@ -230,25 +230,6 @@ export default function ProjectTrackingPage({ params }: { params: Promise<{ id: 
 
                 {/* Side Columns Container */}
                 <div className="space-y-6 h-fit">
-                    {/* Recent Activity Side Column */}
-                    <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
-                        <h3 className="text-xl font-bold text-gray-900 mb-6">Recent Activity</h3>
-                        <div className="space-y-8 relative">
-                            <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-gray-50" />
-                            {[
-                                { act: "Completed milestone 'UI/UX Design'", user: "Sarah Johnson", time: "2 days ago" },
-                                { act: "Updated project deadline", user: "Admin", time: "3 days ago" },
-                                { act: "Uploaded design mockups", user: "Sarah Johnson", time: "5 days ago" },
-                            ].map((a, i) => (
-                                <div key={i} className="relative pl-10">
-                                    <div className="absolute left-3 w-2.5 h-2.5 bg-emerald-500 rounded-full border-4 border-white ring-1 ring-emerald-500" />
-                                    <p className="text-sm font-bold text-gray-900 leading-snug">{a.act}</p>
-                                    <p className="text-xs text-gray-400 mt-1 font-medium">{a.user} • {a.time}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Public Announcements Column */}
                     <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
                         <h3 className="text-xl font-bold text-gray-900 mb-6">Public Announcements</h3>

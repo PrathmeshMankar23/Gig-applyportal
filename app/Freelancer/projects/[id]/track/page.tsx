@@ -47,19 +47,6 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
         { name: 'API_Documentation.pdf', size: '1.1 MB' }
     ]);
 
-    // Modal States
-    const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
-    const [newMilestone, setNewMilestone] = useState({ title: '', date: '', description: '', status: 'pending' });
-
-    // Handlers
-    const handleAddMilestone = (e: React.FormEvent) => {
-        e.preventDefault();
-        setMilestones([...milestones, { ...newMilestone, status: 'pending' }]);
-        setIsMilestoneModalOpen(false);
-        setNewMilestone({ title: '', date: '', description: '', status: 'pending' });
-        showNotification("Milestone added successfully!");
-    };
-
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -139,12 +126,6 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
                 <div className="lg:col-span-2 space-y-4">
                     <div className="flex justify-between items-center mb-2">
                         <h3 className="text-xl font-bold text-gray-900">Milestones</h3>
-                        <button 
-                            onClick={() => setIsMilestoneModalOpen(true)}
-                            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-100"
-                        >
-                            <Plus className="w-4 h-4" /> Add Milestone
-                        </button>
                     </div>
 
                     {/* Milestone Items */}
@@ -230,25 +211,6 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
 
                 {/* Side Columns Container */}
                 <div className="space-y-6 h-fit">
-                    {/* Recent Activity Side Column */}
-                    <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
-                        <h3 className="text-xl font-bold text-gray-900 mb-6">Recent Activity</h3>
-                        <div className="space-y-8 relative">
-                            <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-gray-50" />
-                            {[
-                                { act: "Completed milestone 'UI/UX Design'", user: "Sarah Johnson", time: "2 days ago" },
-                                { act: "Updated project deadline", user: "Admin", time: "3 days ago" },
-                                { act: "Uploaded design mockups", user: "Sarah Johnson", time: "5 days ago" },
-                            ].map((a, i) => (
-                                <div key={i} className="relative pl-10">
-                                    <div className="absolute left-3 w-2.5 h-2.5 bg-emerald-500 rounded-full border-4 border-white ring-1 ring-emerald-500" />
-                                    <p className="text-sm font-bold text-gray-900 leading-snug">{a.act}</p>
-                                    <p className="text-xs text-gray-400 mt-1 font-medium">{a.user} • {a.time}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Public Announcements Column */}
                     <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
                         <h3 className="text-xl font-bold text-gray-900 mb-6">Public Announcements</h3>
@@ -281,69 +243,6 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
                     </div>
                 </div>
             </div>
-
-            {/* Add Milestone Modal */}
-            {isMilestoneModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[32px] w-full max-w-lg p-10 shadow-2xl relative animate-in zoom-in-95 duration-200">
-                        <button onClick={() => setIsMilestoneModalOpen(false)} className="absolute right-8 top-8 p-2 hover:bg-gray-100 rounded-full text-gray-400 transition-colors">
-                            <X className="w-6 h-6" />
-                        </button>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-8 tracking-tight">Add Milestone</h2>
-                        <form onSubmit={handleAddMilestone} className="space-y-6">
-                            <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2 tracking-widest">Milestone Title *</label>
-                                <input 
-                                    required
-                                    value={newMilestone.title}
-                                    onChange={e => setNewMilestone({...newMilestone, title: e.target.value})}
-                                    className="w-full px-5 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-emerald-500 outline-none transition-all font-medium text-gray-900 shadow-sm"
-                                    placeholder="e.g. Design Completion"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2 tracking-widest">Due Date *</label>
-                                <input 
-                                    required
-                                    type="date"
-                                    value={newMilestone.date}
-                                    onChange={e => setNewMilestone({...newMilestone, date: e.target.value})}
-                                    className="w-full px-5 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-emerald-500 outline-none transition-all font-medium text-gray-900 shadow-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2 tracking-widest">Description</label>
-                                <textarea 
-                                    value={newMilestone.description}
-                                    onChange={e => setNewMilestone({...newMilestone, description: e.target.value})}
-                                    className="w-full px-5 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-emerald-500 outline-none transition-all font-medium text-gray-900 resize-none shadow-sm"
-                                    placeholder="Briefly describe what this milestone covers..."
-                                    rows={3}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-400 uppercase mb-3 tracking-widest">Supporting Document</label>
-                                <button 
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-4 text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all font-bold shadow-sm"
-                                >
-                                    <Upload className="w-5 h-5" />
-                                    Upload File
-                                </button>
-                            </div>
-                            <div className="mt-10 flex gap-4">
-                                <button type="button" onClick={() => setIsMilestoneModalOpen(false)} className="flex-1 py-4 border border-gray-200 rounded-2xl font-bold text-gray-600 hover:bg-gray-50 transition-all">
-                                    Cancel
-                                </button>
-                                <button type="submit" className="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all">
-                                    Add Milestone
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
