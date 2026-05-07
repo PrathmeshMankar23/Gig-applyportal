@@ -30,9 +30,11 @@ import { useApplications, Application, Notification } from '@/context/Applicatio
 import { cn } from "@/lib/utils";
 
 import ProjectWorkspace from '@/components/ProjectWorkspace';
+import { useProjects } from '@/context/ProjectContext';
 
 export default function AdminRequestsPage() {
     const { applications, notifications, updateApplicationStatus, addComment, uploadFile } = useApplications();
+    const { assignProject } = useProjects();
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
@@ -56,6 +58,15 @@ export default function AdminRequestsPage() {
 
     const handleAction = (id: number, status: Application['status']) => {
         updateApplicationStatus(id, status);
+        
+        // If selected, update the project context as well
+        if (status === 'Selected') {
+            const app = applications.find(a => a.id === id);
+            if (app) {
+                assignProject(app.projectId, app.applicantName);
+            }
+        }
+
         if (selectedApp && selectedApp.id === id) {
             setSelectedApp({ ...selectedApp, status });
         }

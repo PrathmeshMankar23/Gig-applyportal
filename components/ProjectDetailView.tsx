@@ -17,6 +17,7 @@ import { ApplyModal } from './ApplyModal';
 
 interface ProjectDetailViewProps {
     project: {
+        id: number;
         title: string;
         client: string;
         budget: string;
@@ -183,6 +184,7 @@ export function ProjectDetailView({ project, role }: ProjectDetailViewProps) {
                 <ApplyModal 
                     isOpen={isApplyModalOpen} 
                     onClose={() => setIsApplyModalOpen(false)} 
+                    projectId={project.id}
                     projectTitle={project.title}
                     role={role as 'freelancer' | 'agency'}
                 />

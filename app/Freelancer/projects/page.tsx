@@ -21,7 +21,7 @@ export default function AvailableProjects() {
   const { applications } = useApplications();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("All Categories");
-  const [applyModal, setApplyModal] = React.useState<{isOpen: boolean, title: string}>({ isOpen: false, title: "" });
+  const [applyModal, setApplyModal] = React.useState<{isOpen: boolean, title: string, id: number}>({ isOpen: false, title: "", id: 0 });
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -168,7 +168,7 @@ export default function AvailableProjects() {
                 View Details
               </Link>
               <button 
-                onClick={() => setApplyModal({ isOpen: true, title: project.title })}
+                onClick={() => setApplyModal({ isOpen: true, title: project.title, id: project.id })}
                 className="flex items-center justify-center gap-2 py-4 px-6 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all"
               >
                 <Send className="w-5 h-5" />
@@ -182,6 +182,7 @@ export default function AvailableProjects() {
       <ApplyModal 
         isOpen={applyModal.isOpen}
         onClose={() => setApplyModal({ ...applyModal, isOpen: false })}
+        projectId={applyModal.id}
         projectTitle={applyModal.title}
         role="freelancer"
       />

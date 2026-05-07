@@ -7,11 +7,12 @@ import { useApplications } from '@/context/ApplicationContext';
 interface ApplyModalProps {
     isOpen: boolean;
     onClose: () => void;
+    projectId: number;
     projectTitle: string;
     role: 'freelancer' | 'agency';
 }
 
-export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalProps) {
+export function ApplyModal({ isOpen, onClose, projectId, projectTitle, role }: ApplyModalProps) {
     const { addApplication } = useApplications();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
@@ -32,14 +33,15 @@ export function ApplyModal({ isOpen, onClose, projectTitle, role }: ApplyModalPr
         e.preventDefault();
         
         addApplication({
-            projectId: 0, // In a real app, this would be passed as a prop
+            projectId: projectId,
             projectTitle: projectTitle,
-            applicantName: role === 'freelancer' ? "John Doe" : "Agency Name", // Mocked for now
+            applicantName: role === 'freelancer' ? "Sarah Johnson" : "Creative Studios Inc.",
             applicantRole: role,
-            email: "john@example.com", // Mocked for now
+            email: role === 'freelancer' ? "sarah.j@email.com" : "contact@creativestudios.com",
             budget: formData.budget,
             duration: formData.duration,
             coverLetter: formData.coverLetter,
+            profileId: role === 'freelancer' ? 'sarah' : 'creative'
         });
 
         setIsSubmitted(true);

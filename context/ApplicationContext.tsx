@@ -47,7 +47,7 @@ export interface Notification {
 interface ApplicationContextType {
     applications: Application[];
     notifications: Notification[];
-    addApplication: (application: Omit<Application, 'id' | 'status' | 'appliedDate' | 'profileId' | 'messages' | 'files'>) => void;
+    addApplication: (application: Omit<Application, 'id' | 'status' | 'appliedDate' | 'messages' | 'files'>) => void;
     updateApplicationStatus: (id: number, status: Application['status']) => void;
     addComment: (applicationId: number, sender: string, content: string) => void;
     uploadFile: (applicationId: number, name: string, url: string) => void;
@@ -145,13 +145,12 @@ export function ApplicationProvider({ children }: { children: React.ReactNode })
         setNotifications(prev => [newNotif, ...prev]);
     };
 
-    const addApplication = (appData: Omit<Application, 'id' | 'status' | 'appliedDate' | 'profileId' | 'messages' | 'files'>) => {
+    const addApplication = (appData: Omit<Application, 'id' | 'status' | 'appliedDate' | 'messages' | 'files'>) => {
         const newApp: Application = {
             ...appData,
             id: Math.max(0, ...applications.map(a => a.id)) + 1,
             status: 'Pending',
             appliedDate: new Date().toISOString().split('T')[0],
-            profileId: appData.applicantRole === 'freelancer' ? 'sarah' : 'creative',
             messages: [],
             files: []
         };

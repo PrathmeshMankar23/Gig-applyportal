@@ -35,6 +35,7 @@ interface ProjectContextType {
     deleteProject: (id: number) => void;
     addCategory: (category: string) => void;
     addProjectUpdate: (projectId: number, text: string, sender: string) => void;
+    assignProject: (projectId: number, assignedTo: string) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -180,8 +181,14 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         }));
     };
 
+    const assignProject = (projectId: number, assignedTo: string) => {
+        setProjects(prev => prev.map(p => 
+            p.id === projectId ? { ...p, status: 'in progress', assignedTo, progress: 0 } : p
+        ));
+    };
+
     return (
-        <ProjectContext.Provider value={{ projects, categories, addProject, updateProject, deleteProject, addCategory, addProjectUpdate }}>
+        <ProjectContext.Provider value={{ projects, categories, addProject, updateProject, deleteProject, addCategory, addProjectUpdate, assignProject }}>
             {children}
         </ProjectContext.Provider>
     );

@@ -21,7 +21,7 @@ export default function AgencyProjectsPage() {
   const { applications } = useApplications();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("All Categories");
-  const [applyModal, setApplyModal] = React.useState<{isOpen: boolean, title: string}>({ isOpen: false, title: "" });
+  const [applyModal, setApplyModal] = React.useState<{isOpen: boolean, title: string, id: number}>({ isOpen: false, title: "", id: 0 });
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -163,7 +163,7 @@ export default function AgencyProjectsPage() {
                 <ExternalLink className="w-4 h-4" />
               </Link>
               <button 
-                onClick={() => setApplyModal({ isOpen: true, title: project.title })}
+                onClick={() => setApplyModal({ isOpen: true, title: project.title, id: project.id })}
                 className="flex-[2] py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 shadow-lg shadow-purple-100 transition-all flex items-center justify-center gap-2"
               >
                 Apply Now
@@ -177,6 +177,7 @@ export default function AgencyProjectsPage() {
       <ApplyModal 
         isOpen={applyModal.isOpen}
         onClose={() => setApplyModal({ ...applyModal, isOpen: false })}
+        projectId={applyModal.id}
         projectTitle={applyModal.title}
         role="agency"
       />
