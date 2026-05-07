@@ -59,8 +59,24 @@ export default function Agencies() {
     const [searchQuery, setSearchQuery] = useState("");
     const [specFilter, setSpecFilter] = useState("");
     const [availabilityFilter, setAvailabilityFilter] = useState("All Availability");
+    const [agencies, setAgencies] = useState(agencyData);
 
-    const filteredAgencies = agencyData.filter(agency => {
+    React.useEffect(() => {
+        const creativeStatus = localStorage.getItem('profile_status_creative');
+        if (creativeStatus) {
+            setAgencies(prev => prev.map(a => a.id === 'creative' ? { ...a, status: creativeStatus } : a));
+        }
+
+        const handleStorage = (e: StorageEvent) => {
+            if (e.key === 'profile_status_creative' && e.newValue) {
+                setAgencies(prev => prev.map(a => a.id === 'creative' ? { ...a, status: e.newValue || 'Available' } : a));
+            }
+        };
+        window.addEventListener('storage', handleStorage);
+        return () => window.removeEventListener('storage', handleStorage);
+    }, []);
+
+    const filteredAgencies = agencies.filter(agency => {
         const matchesSearch = agency.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             agency.specializations.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
         

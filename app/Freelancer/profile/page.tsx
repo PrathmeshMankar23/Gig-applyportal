@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Mail,
   Phone,
@@ -16,6 +16,7 @@ import {
   Check,
   FileText
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function FreelancerProfile() {
@@ -29,7 +30,8 @@ export default function FreelancerProfile() {
     portfolio: "portfolio.sarahjohnson.com",
     about: "Experienced full-stack developer with over 8 years of expertise in building scalable web applications. Specialized in React, Node.js, and cloud technologies. Passionate about creating clean, maintainable code and delivering exceptional user experiences. Proven track record of successful project delivery and client satisfaction.",
     skills: ["React", "Node.js", "TypeScript", "JavaScript", "Python", "MongoDB", "PostgreSQL", "AWS", "Docker", "Git", "UI/UX Design", "REST APIs"],
-    hourlyRate: "75"
+    hourlyRate: "75",
+    status: "Available"
   });
 
   const [tempProfileData, setTempProfileData] = useState(profileData);
@@ -39,8 +41,17 @@ export default function FreelancerProfile() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     setProfileData(tempProfileData);
+    localStorage.setItem('profile_status_sarah', tempProfileData.status);
     setIsEditModalOpen(false);
   };
+
+  useEffect(() => {
+    const savedStatus = localStorage.getItem('profile_status_sarah');
+    if (savedStatus) {
+      setProfileData(prev => ({ ...prev, status: savedStatus as any }));
+      setTempProfileData(prev => ({ ...prev, status: savedStatus as any }));
+    }
+  }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -81,8 +92,11 @@ export default function FreelancerProfile() {
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-1">
               <h2 className="text-3xl font-bold text-gray-900">{profileData.name}</h2>
-              <span className="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold">
-                Available
+              <span className={cn(
+                "px-3 py-1 rounded-full text-xs font-bold transition-all",
+                profileData.status === "Available" ? "bg-emerald-100 text-emerald-600" : "bg-red-100 text-red-600"
+              )}>
+                {profileData.status}
               </span>
             </div>
             <p className="text-gray-500 text-lg font-medium mb-6">{profileData.title}</p>
@@ -259,6 +273,31 @@ export default function FreelancerProfile() {
                       onChange={e => setTempProfileData({...tempProfileData, hourlyRate: e.target.value})}
                       className="w-full px-6 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none transition-all font-bold text-gray-900"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-black text-gray-900 uppercase tracking-widest ml-1">Availability Status</label>
+                    <div className="flex p-1 bg-gray-100 rounded-2xl">
+                      <button
+                        type="button"
+                        onClick={() => setTempProfileData({...tempProfileData, status: 'Available'})}
+                        className={cn(
+                          "flex-1 py-3 rounded-xl font-bold text-sm transition-all",
+                          tempProfileData.status === 'Available' ? "bg-white text-emerald-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                        )}
+                      >
+                        Available
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTempProfileData({...tempProfileData, status: 'Busy'})}
+                        className={cn(
+                          "flex-1 py-3 rounded-xl font-bold text-sm transition-all",
+                          tempProfileData.status === 'Busy' ? "bg-white text-red-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                        )}
+                      >
+                        Busy
+                      </button>
+                    </div>
                   </div>
                 </div>
 

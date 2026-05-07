@@ -13,17 +13,18 @@ export interface Project {
     id: number;
     title: string;
     client: string;
-    status: string;
     budget: string;
     deadline: string;
     category: string;
     priority: string;
     skills: string;
     description: string;
-    assignedTo: string;
     progress: number;
-    posted: string;
     applicants: number;
+    posted: string;
+    status: string;
+    assignedTo: string;
+    assignedUsers?: string[];
     updates?: ProjectUpdate[];
 }
 
@@ -182,9 +183,20 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     };
 
     const assignProject = (projectId: number, assignedTo: string) => {
-        setProjects(prev => prev.map(p => 
-            p.id === projectId ? { ...p, status: 'in progress', assignedTo, progress: 0 } : p
-        ));
+        setProjects(prev => prev.map(p => {
+            if (p.id === projectId) {
+                const currentUsers = p.assignedUsers || (p.assignedTo !== 'Unassigned' ? [p.assignedTo] : []);
+                const updatedUsers = Array.from(new Set([...currentUsers, assignedTo]));
+                return { 
+                    ...p, 
+                    status: 'in progress', 
+                    assignedTo: updatedUsers.join(', '), 
+                    assignedUsers: updatedUsers,
+                    progress: p.progress || 0 
+                };
+            }
+            return p;
+        }));
     };
 
     return (

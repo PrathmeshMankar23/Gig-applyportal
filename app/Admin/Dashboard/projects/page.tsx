@@ -19,9 +19,11 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useProjects } from "@/context/ProjectContext";
+import { useApplications } from "@/context/ApplicationContext";
 
 export default function Projects() {
     const { projects, categories, addProject, updateProject, deleteProject, addCategory } = useProjects();
+    const { applications } = useApplications();
     
     // Notification State
     const [notification, setNotification] = useState<string | null>(null);
@@ -268,7 +270,24 @@ export default function Projects() {
                         <div className="space-y-4 mb-8">
                             <InfoRow label="Budget (USD)" value={`$${project.budget}`} />
                             <InfoRow label="Deadline" value={project.deadline} />
-                            <InfoRow label="Assigned" value={project.assignedTo} />
+                            <div className="flex justify-between items-start text-sm">
+                                <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px] pt-1">Assigned Members</span>
+                                <div className="text-right flex flex-col items-end gap-1">
+                                    {(project.assignedUsers && project.assignedUsers.length > 0) ? (
+                                        project.assignedUsers.map(user => (
+                                            <span key={user} className="text-gray-900 font-bold bg-gray-50 px-2 py-0.5 rounded text-xs">{user}</span>
+                                        ))
+                                    ) : (
+                                        <span className="text-gray-400 font-bold">{project.assignedTo}</span>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">Applicants</span>
+                                <span className="text-emerald-600 font-bold">
+                                    {applications.filter(a => a.projectId === project.id).length} Total
+                                </span>
+                            </div>
                         </div>
 
                         <div className="space-y-3 mb-8">

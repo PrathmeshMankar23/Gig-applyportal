@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Mail,
   Phone,
@@ -17,6 +17,7 @@ import {
   Upload,
   FileText
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function AgencyProfilePage() {
@@ -31,7 +32,8 @@ export default function AgencyProfilePage() {
     about: "Creative Studios Inc. is a full-service digital agency specializing in web development, mobile applications, and digital design. Founded in 2018, we have grown to a team of 24 talented professionals dedicated to delivering exceptional digital experiences. Our portfolio spans various industries, and we pride ourselves on our ability to understand client needs and deliver innovative solutions that drive business growth.",
     specializations: ["Web Development", "Mobile Apps", "UI/UX Design", "Branding", "Digital Marketing", "Cloud Solutions", "E-commerce", "Custom Software"],
     established: "2018",
-    teamSize: 24
+    teamSize: 24,
+    status: "Available"
   });
 
   const [tempData, setTempData] = useState(agencyData);
@@ -47,8 +49,17 @@ export default function AgencyProfilePage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     setAgencyData(tempData);
+    localStorage.setItem('profile_status_creative', tempData.status);
     setIsEditModalOpen(false);
   };
+
+  useEffect(() => {
+    const savedStatus = localStorage.getItem('profile_status_creative');
+    if (savedStatus) {
+      setAgencyData(prev => ({ ...prev, status: savedStatus as any }));
+      setTempData(prev => ({ ...prev, status: savedStatus as any }));
+    }
+  }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -93,8 +104,11 @@ export default function AgencyProfilePage() {
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-2">
               <h2 className="text-3xl font-bold text-gray-900">{agencyData.name}</h2>
-              <span className="bg-emerald-50 text-emerald-500 px-3 py-1 rounded-full text-xs font-bold">
-                Available
+              <span className={cn(
+                "px-3 py-1 rounded-full text-xs font-bold transition-all",
+                agencyData.status === "Available" ? "bg-emerald-50 text-emerald-500" : "bg-red-50 text-red-500"
+              )}>
+                {agencyData.status}
               </span>
             </div>
             <p className="text-gray-500 font-medium text-lg mb-6">{agencyData.title}</p>
@@ -259,6 +273,31 @@ export default function AgencyProfilePage() {
                       onChange={e => setTempData({...tempData, teamSize: parseInt(e.target.value)})}
                       className="w-full px-6 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-50 focus:border-purple-500 outline-none transition-all font-bold text-gray-900"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-black text-gray-900 uppercase tracking-widest ml-1">Agency Status</label>
+                    <div className="flex p-1 bg-gray-100 rounded-2xl">
+                      <button
+                        type="button"
+                        onClick={() => setTempData({...tempData, status: 'Available'})}
+                        className={cn(
+                          "flex-1 py-3 rounded-xl font-bold text-sm transition-all",
+                          tempData.status === 'Available' ? "bg-white text-emerald-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                        )}
+                      >
+                        Available
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTempData({...tempData, status: 'Busy'})}
+                        className={cn(
+                          "flex-1 py-3 rounded-xl font-bold text-sm transition-all",
+                          tempData.status === 'Busy' ? "bg-white text-red-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                        )}
+                      >
+                        Busy
+                      </button>
+                    </div>
                   </div>
                 </div>
 

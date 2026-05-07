@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 
 import { ApplyModal } from './ApplyModal';
+import { useApplications } from '@/context/ApplicationContext';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface ProjectDetailViewProps {
     project: {
@@ -30,13 +33,22 @@ interface ProjectDetailViewProps {
         applicants: number;
         posted: string;
         status: string;
+        assignedTo: string;
+        assignedUsers?: string[];
         updates?: { id: number, text: string, date: string }[];
     };
     role: 'admin' | 'freelancer' | 'agency';
 }
 
 export function ProjectDetailView({ project, role }: ProjectDetailViewProps) {
+    const { applications } = useApplications();
     const [isApplyModalOpen, setIsApplyModalOpen] = React.useState(false);
+    
+    // Calculate dynamic applicant counts
+    const projectApplications = applications.filter(app => app.projectId === project.id);
+    const freelancerApplicants = projectApplications.filter(app => app.applicantRole === 'freelancer').length;
+    const agencyApplicants = projectApplications.filter(app => app.applicantRole === 'agency').length;
+    const totalApplicants = projectApplications.length;
     const themeColor = role === 'admin' ? 'emerald' : role === 'freelancer' ? 'blue' : 'purple';
     
     const colors: any = {
@@ -85,7 +97,12 @@ export function ProjectDetailView({ project, role }: ProjectDetailViewProps) {
                     <StatBox icon={DollarSign} label="Budget" value={`$${project.budget}`} color={themeColor} />
                     <StatBox icon={Calendar} label="Deadline" value={project.deadline} color={themeColor} />
                     <StatBox icon={Clock} label="Posted on" value={project.posted} color={themeColor} />
-                    <StatBox icon={Users} label="Applicants" value={`${project.applicants} ${role === 'agency' ? 'Agencies' : 'Freelancers'}`} color={themeColor} />
+                    <StatBox 
+                        icon={Users} 
+                        label="Applicants" 
+                        value={role === 'admin' ? `${totalApplicants} Total` : role === 'agency' ? `${agencyApplicants} Agencies` : `${freelancerApplicants} Freelancers`} 
+                        color={themeColor} 
+                    />
                 </div>
             </div>
 
@@ -141,6 +158,50 @@ export function ProjectDetailView({ project, role }: ProjectDetailViewProps) {
                             ))}
                         </div>
                     </div>
+
+                    {/* Admin Applicant List */}
+                    {role === 'admin' && projectApplications.length > 0 && (
+                        <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm">
+                            <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-emerald-600 text-white">
+                                    <Users className="w-5 h-5" />
+                                </div>
+                                All Project Applicants
+                            </h3>
+                            <div className="space-y-4">
+                                {projectApplications.map(app => (
+                                    <div key={app.id} className="flex items-center justify-between p-6 bg-gray-50 rounded-3xl border border-gray-100 hover:border-emerald-200 transition-all group">
+                                        <div className="flex items-center gap-4">
+                                            <div className={cn(
+                                                "w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg",
+                                                app.applicantRole === 'freelancer' ? "bg-blue-600 shadow-blue-100" : "bg-purple-600 shadow-purple-100"
+                                            )}>
+                                                {app.applicantName[0]}
+                                            </div>
+                                            <div>
+                                                <h4 className="font-black text-gray-900">{app.applicantName}</h4>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={cn(
+                                                        "text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md",
+                                                        app.applicantRole === 'freelancer' ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"
+                                                    )}>
+                                                        {app.applicantRole}
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Applied {app.appliedDate}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Link 
+                                            href="/Admin/Dashboard/requests" 
+                                            className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all"
+                                        >
+                                            Review Request
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Sidebar Info */}
@@ -168,6 +229,27 @@ export function ProjectDetailView({ project, role }: ProjectDetailViewProps) {
                             This progress bar indicates the current stage of the project based on completed milestones.
                         </p>
                     </div>
+
+                    {role === 'admin' && project.assignedUsers && project.assignedUsers.length > 0 && (
+                        <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm">
+                            <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                                <div className={`p-2 rounded-lg bg-emerald-600 text-white`}>
+                                    <Users className="w-5 h-5" />
+                                </div>
+                                Assigned Team
+                            </h3>
+                            <div className="space-y-3">
+                                {project.assignedUsers.map(user => (
+                                    <div key={user} className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                        <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs">
+                                            {user[0]}
+                                        </div>
+                                        <span className="font-bold text-gray-900 text-sm">{user}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {role !== 'admin' && (
                         <button 

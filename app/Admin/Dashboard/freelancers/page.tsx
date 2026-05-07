@@ -58,13 +58,30 @@ export default function Freelancers() {
     const [searchQuery, setSearchQuery] = useState("");
     const [availabilityFilter, setAvailabilityFilter] = useState("All Availability");
     const [notification, setNotification] = useState<string | null>(null);
+    const [freelancers, setFreelancers] = useState(freelancerData);
+
+    React.useEffect(() => {
+        const sarahStatus = localStorage.getItem('profile_status_sarah');
+        if (sarahStatus) {
+            setFreelancers(prev => prev.map(f => f.id === 'sarah' ? { ...f, status: sarahStatus } : f));
+        }
+
+        // Listen for storage changes in other tabs
+        const handleStorage = (e: StorageEvent) => {
+            if (e.key === 'profile_status_sarah' && e.newValue) {
+                setFreelancers(prev => prev.map(f => f.id === 'sarah' ? { ...f, status: e.newValue || 'Available' } : f));
+            }
+        };
+        window.addEventListener('storage', handleStorage);
+        return () => window.removeEventListener('storage', handleStorage);
+    }, []);
 
     const showNotification = (msg: string) => {
         setNotification(msg);
         setTimeout(() => setNotification(null), 3000);
     };
 
-    const filteredFreelancers = freelancerData.filter(freelancer => {
+    const filteredFreelancers = freelancers.filter(freelancer => {
         const matchesSearch = freelancer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             freelancer.skills.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
         
