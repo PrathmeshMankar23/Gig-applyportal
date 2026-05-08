@@ -66,7 +66,7 @@ export default function AdminHeader() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/Admin/Dashboard/notifications" className="w-full mt-4 py-2 text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest border-t border-gray-50 pt-4 text-center block">
+                        <Link href="/Admin/notifications" className="w-full mt-4 py-2 text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest border-t border-gray-50 pt-4 text-center block">
                             View all notifications
                         </Link>
                     </DropdownMenuContent>
@@ -88,7 +88,7 @@ export default function AdminHeader() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56 mt-2 rounded-xl p-2">
                         <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2.5">
-                            <Link href="/Admin/Dashboard/settings" className="w-full">
+                            <Link href="/Admin/settings" className="w-full">
                                 Profile Settings
                             </Link>
                         </DropdownMenuItem>

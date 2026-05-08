@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from 'react';
 import {
@@ -220,7 +220,7 @@ export default function Freelancers() {
 
                             <div className="pt-6 mt-4 border-t border-gray-50">
                                 <Link
-                                    href={`/Admin/Dashboard/portfolio?id=${freelancer.id}&from=freelancers`}
+                                    href={`/Admin/portfolio?id=${freelancer.id}&from=freelancers`}
                                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-2 group-hover:translate-y-[-2px]"
                                 >
                                     <User className="w-4 h-4" />

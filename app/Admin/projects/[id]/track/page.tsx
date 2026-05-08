@@ -98,7 +98,7 @@ export default function ProjectTrackingPage({ params }: { params: Promise<{ id: 
             )}
 
             {/* Back Button */}
-            <Link href="/Admin/Dashboard/projects" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4 w-fit">
+            <Link href="/Admin/projects" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4 w-fit">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Projects
             </Link>

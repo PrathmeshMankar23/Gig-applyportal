@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -295,7 +295,7 @@ export default function AdminRequestsPage() {
                                         <p className="text-gray-500 font-bold mb-6">{selectedApp.email}</p>
                                         
                                         <Link 
-                                            href={`/Admin/Dashboard/portfolio?id=${selectedApp.profileId}&from=requests`}
+                                            href={`/Admin/portfolio?id=${selectedApp.profileId}&from=requests`}
                                             className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200 group"
                                         >
                                             <Eye className="w-4 h-4" /> 
@@ -375,3 +375,4 @@ export default function AdminRequestsPage() {
         </div>
     );
 }
+

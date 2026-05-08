@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -78,9 +78,9 @@ function PortfolioContent() {
     );
 
     const backPath = from === 'freelancers' 
-        ? '/Admin/Dashboard/freelancers' 
+        ? '/Admin/freelancers' 
         : from === 'agencies' 
-            ? '/Admin/Dashboard/agencies' 
+            ? '/Admin/agencies' 
             : '/Admin/Dashboard';
 
     return (
@@ -216,3 +216,4 @@ function Metric({ icon, label, value }: { icon: any; label: string; value: any }
         </div>
     );
 }
+

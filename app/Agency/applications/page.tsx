@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 export default function MyApplicationsPage() {
   const router = useRouter();
   const { applications } = useApplications();
-  
+
   // Filter for current user (Creative Studios Inc. as mock)
   const myApplications = applications.filter(app => app.applicantName === "Creative Studios Inc.");
 
@@ -63,7 +63,7 @@ export default function MyApplicationsPage() {
       {myApplications.length > 0 ? (
         <div className="space-y-4">
           {myApplications.map((app) => (
-            <div 
+            <div
               key={app.id}
               className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-purple-100/30 transition-all flex items-center justify-between group"
             >
@@ -80,22 +80,16 @@ export default function MyApplicationsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-8">
                 <span className={cn(
                   "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
                   app.status === 'Selected' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                  app.status === 'Rejected' ? "bg-red-50 text-red-600 border-red-100" :
-                  "bg-orange-50 text-orange-600 border-orange-100"
+                    app.status === 'Rejected' ? "bg-red-50 text-red-600 border-red-100" :
+                      "bg-orange-50 text-orange-600 border-orange-100"
                 )}>
                   {app.status}
                 </span>
-                <button 
-                  onClick={() => router.push(`/Agency/Dashboard?appId=${app.id}`)}
-                  className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-purple-50 hover:text-purple-600 transition-all"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
               </div>
             </div>
           ))}
@@ -109,7 +103,7 @@ export default function MyApplicationsPage() {
           <p className="text-gray-500 font-medium mb-8 max-w-sm">
             Your agency hasn&apos;t applied to any projects yet. Start browsing available opportunities to grow your portfolio.
           </p>
-          <button 
+          <button
             onClick={() => router.push('/Agency/projects')}
             className={`${theme.primary} ${theme.hover} text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg ${theme.shadow} flex items-center gap-2 group`}
           >

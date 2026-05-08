@@ -16,11 +16,11 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
     { label: "Dashboard", href: "/Admin/Dashboard", icon: LayoutGrid },
-    { label: "Analytics", href: "/Admin/Dashboard/analytics", icon: BarChart3 },
-    { label: "Projects", href: "/Admin/Dashboard/projects", icon: FolderOpen },
-    { label: "Freelancers", href: "/Admin/Dashboard/freelancers", icon: Users },
-    { label: "Agencies", href: "/Admin/Dashboard/agencies", icon: UserCircle2 },
-    { label: "Requests", href: "/Admin/Dashboard/requests", icon: Clock },
+    { label: "Analytics", href: "/Admin/analytics", icon: BarChart3 },
+    { label: "Projects", href: "/Admin/projects", icon: FolderOpen },
+    { label: "Freelancers", href: "/Admin/freelancers", icon: Users },
+    { label: "Agencies", href: "/Admin/agencies", icon: UserCircle2 },
+    { label: "Requests", href: "/Admin/requests", icon: Clock },
 ];
 
 export default function AdminSidebar() {

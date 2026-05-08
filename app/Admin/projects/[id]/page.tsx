@@ -34,7 +34,7 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ id: s
     if (!project) return (
         <div className="py-20 text-center">
             <h2 className="text-2xl font-bold text-gray-900">Project not found</h2>
-            <Link href="/Admin/Dashboard/projects" className="text-emerald-600 font-bold underline mt-4 inline-block">Back to Projects</Link>
+            <Link href="/Admin/projects" className="text-emerald-600 font-bold underline mt-4 inline-block">Back to Projects</Link>
         </div>
     );
 
@@ -50,7 +50,7 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ id: s
             {/* Top Actions */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                 <Link
-                    href="/Admin/Dashboard/projects"
+                    href="/Admin/projects"
                     className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors w-fit font-bold"
                 >
                     <ArrowLeft className="w-4 h-4" />
@@ -69,7 +69,7 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ id: s
                     </button>
 
                     <Link
-                        href={`/Admin/Dashboard/projects/${id}/track`}
+                        href={`/Admin/projects/${id}/track`}
                         className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
                     >
                         <Play className="w-4 h-4 fill-current" /> Track Progress

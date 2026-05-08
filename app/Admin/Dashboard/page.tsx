@@ -57,10 +57,10 @@ export default function AdminDashboard() {
 
     // Stats Logic
     const stats = [
-        { label: "Total Projects", value: projects.length, icon: FolderOpen, color: "text-blue-600", bgColor: "bg-blue-300", borderColor: "border-blue-400", href: "/Admin/Dashboard/projects" },
-        { label: "Total Freelancers", value: 3, icon: Users, color: "text-emerald-600", bgColor: "bg-emerald-300", borderColor: "border-emerald-400", href: "/Admin/Dashboard/freelancers" },
-        { label: "Total Agency", value: 3, icon: Building2, color: "text-purple-600", bgColor: "bg-purple-300", borderColor: "border-purple-400", href: "/Admin/Dashboard/agencies" },
-        { label: "Total Request", value: applications.length, icon: Clock, color: "text-orange-500", bgColor: "bg-orange-300", borderColor: "border-orange-400", href: "/Admin/Dashboard/requests" },
+        { label: "Total Projects", value: projects.length, icon: FolderOpen, color: "text-blue-600", bgColor: "bg-blue-300", borderColor: "border-blue-400", href: "/Admin/projects" },
+        { label: "Total Freelancers", value: 3, icon: Users, color: "text-emerald-600", bgColor: "bg-emerald-300", borderColor: "border-emerald-400", href: "/Admin/freelancers" },
+        { label: "Total Agency", value: 3, icon: Building2, color: "text-purple-600", bgColor: "bg-purple-300", borderColor: "border-purple-400", href: "/Admin/agencies" },
+        { label: "Total Request", value: applications.length, icon: Clock, color: "text-orange-500", bgColor: "bg-orange-300", borderColor: "border-orange-400", href: "/Admin/requests" },
     ];
 
     // Filtering Logic
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <Link
-                                            href={`/Admin/Dashboard/portfolio?id=${req.id}`}
+                                            href={`/Admin/portfolio?id=${req.id}`}
                                             className="inline-flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm"
                                         >
                                             <Eye className="w-4 h-4" />

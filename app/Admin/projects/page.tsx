@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import React, { useState, useRef } from 'react';
@@ -250,7 +250,7 @@ export default function Projects() {
                                 <h3 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">{project.title}</h3>
                                 <div className="flex items-center gap-2 mt-1">
                                     <p className="text-gray-400 font-medium">{project.client}</p>
-                                    <span className="text-gray-200">•</span>
+                                    <span className="text-gray-200">â€¢</span>
                                     <span className="text-emerald-600 font-bold text-xs uppercase tracking-widest">{project.category}</span>
                                 </div>
                             </div>
@@ -305,7 +305,7 @@ export default function Projects() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <Link
-                                href={`/Admin/Dashboard/projects/${project.id}`}
+                                href={`/Admin/projects/${project.id}`}
                                 className="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 py-3.5 rounded-2xl font-bold transition-all"
                             >
                                 <Eye className="w-5 h-5" />
@@ -313,7 +313,7 @@ export default function Projects() {
                             </Link>
 
                             <Link
-                                href={`/Admin/Dashboard/projects/${project.id}/track`}
+                                href={`/Admin/projects/${project.id}/track`}
                                 className="flex items-center justify-center gap-2 bg-[#00A859] hover:bg-[#008f4c] text-white py-3.5 rounded-2xl font-bold transition-all shadow-sm"
                             >
                                 <BarChart2 className="w-5 h-5" />

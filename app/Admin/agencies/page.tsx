@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from 'react';
 import {
@@ -214,7 +214,7 @@ export default function Agencies() {
 
                             {/* Action Button */}
                             <Link
-                                href={`/Admin/Dashboard/portfolio?id=${agency.id}&from=agencies`}
+                                href={`/Admin/portfolio?id=${agency.id}&from=agencies`}
                                 className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-purple-100 mt-6 flex items-center justify-center gap-2 group-hover:translate-y-[-2px]"
                             >
                                 <Building2 className="w-4 h-4" />

@@ -37,11 +37,11 @@ export default function MyApplications() {
             className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex justify-between items-start"
           >
             <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
+              <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
             </div>
             <div className={cn("p-2.5 rounded-xl bg-gray-50", stat.color)}>
-                <stat.icon className="w-5 h-5" />
+              <stat.icon className="w-5 h-5" />
             </div>
           </div>
         ))}
@@ -51,7 +51,7 @@ export default function MyApplications() {
       {myApplications.length > 0 ? (
         <div className="space-y-4">
           {myApplications.map((app) => (
-            <div 
+            <div
               key={app.id}
               className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
             >
@@ -68,22 +68,16 @@ export default function MyApplications() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-8">
                 <span className={cn(
                   "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
                   app.status === 'Selected' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                  app.status === 'Rejected' ? "bg-red-50 text-red-600 border-red-100" :
-                  "bg-orange-50 text-orange-600 border-orange-100"
+                    app.status === 'Rejected' ? "bg-red-50 text-red-600 border-red-100" :
+                      "bg-orange-50 text-orange-600 border-orange-100"
                 )}>
                   {app.status}
                 </span>
-                <button 
-                  onClick={() => router.push(`/Freelancer/Dashboard?appId=${app.id}`)}
-                  className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-blue-50 hover:text-blue-600 transition-all"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
               </div>
             </div>
           ))}
