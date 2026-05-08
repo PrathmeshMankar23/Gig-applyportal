@@ -41,14 +41,6 @@ export default function AgencyHeader() {
 
             {/* Right: Actions & User Profile */}
             <div className="flex items-center gap-4">
-                {/* Notifications */}
-                <Link href="/Agency/notifications">
-                    <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all relative">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
-                    </button>
-                </Link>
-
                 {/* Vertical Divider */}
                 <div className="w-px h-6 bg-gray-100 mx-1"></div>
 

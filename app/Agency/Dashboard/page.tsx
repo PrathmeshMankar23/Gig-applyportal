@@ -78,7 +78,6 @@ export default function AgencyDashboardPage() {
                             <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
                                 <stat.icon className="w-6 h-6" />
                             </div>
-                            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">+12%</span>
                         </div>
                         <div className="mt-4">
                             <p className="text-gray-500 text-sm font-bold uppercase tracking-wider">{stat.label}</p>
@@ -163,19 +162,6 @@ export default function AgencyDashboardPage() {
                                 </div>
                             ))}
                         </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-8 rounded-[32px] text-white shadow-xl shadow-purple-100">
-                        <div className="flex items-center gap-3 mb-4">
-                            <TrendingUp className="w-6 h-6" />
-                            <h3 className="text-lg font-bold">Growth Insight</h3>
-                        </div>
-                        <p className="text-purple-50 text-sm leading-relaxed opacity-90">
-                            Your agency's efficiency has increased by 14% compared to last month. Keep up the great work!
-                        </p>
-                        <button className="mt-6 w-full py-3 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-all">
-                            View Detailed Report
-                        </button>
                     </div>
                 </div>
             </div>

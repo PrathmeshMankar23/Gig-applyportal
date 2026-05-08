@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 export interface Message {
     id: number;
     sender: string;
+    senderRole?: string;
     content: string;
     timestamp: string;
 }
@@ -12,6 +13,8 @@ export interface Message {
 export interface ProjectFile {
     id: number;
     name: string;
+    sender: string;
+    senderRole?: string;
     url: string;
     timestamp: string;
 }
@@ -49,8 +52,8 @@ interface ApplicationContextType {
     notifications: Notification[];
     addApplication: (application: Omit<Application, 'id' | 'status' | 'appliedDate' | 'messages' | 'files'>) => void;
     updateApplicationStatus: (id: number, status: Application['status']) => void;
-    addComment: (applicationId: number, sender: string, content: string) => void;
-    uploadFile: (applicationId: number, name: string, url: string) => void;
+    addComment: (applicationId: number, sender: string, senderRole: string, content: string) => void;
+    uploadFile: (applicationId: number, name: string, sender: string, senderRole: string, url: string) => void;
     markAsRead: (notificationId: number) => void;
 }
 
@@ -88,10 +91,10 @@ export function ApplicationProvider({ children }: { children: React.ReactNode })
             appliedDate: "2026-05-02",
             profileId: "creative",
             messages: [
-                { id: 1, sender: "Admin", content: "We'd like to move forward with your proposal.", timestamp: "2026-05-03 10:00" }
+                { id: 1, sender: "Admin", senderRole: "Admin", content: "We'd like to move forward with your proposal.", timestamp: "2026-05-03 10:00" }
             ],
             files: [
-                { id: 1, name: "project_brief.pdf", url: "#", timestamp: "2026-05-03 10:05" }
+                { id: 1, name: "project_brief.pdf", sender: "Admin", senderRole: "Admin", url: "#", timestamp: "2026-05-03 10:05" }
             ]
         }
     ]);
@@ -166,13 +169,14 @@ export function ApplicationProvider({ children }: { children: React.ReactNode })
         createNotification(app.id, app.projectTitle, `Status Updated: ${status}`, `Application for ${app.projectTitle} is now ${status}`, 'status');
     };
 
-    const addComment = (applicationId: number, sender: string, content: string) => {
+    const addComment = (applicationId: number, sender: string, senderRole: string, content: string) => {
         const app = applications.find(a => a.id === applicationId);
         if (!app) return;
 
         const newMessage: Message = {
             id: Date.now(),
             sender,
+            senderRole,
             content,
             timestamp: new Date().toLocaleString()
         };
@@ -180,16 +184,18 @@ export function ApplicationProvider({ children }: { children: React.ReactNode })
         setApplications(apps => apps.map(a => 
             a.id === applicationId ? { ...a, messages: [...a.messages, newMessage] } : a
         ));
-        createNotification(app.id, app.projectTitle, `New Message: ${sender}`, content.substring(0, 50) + (content.length > 50 ? '...' : ''), 'comment');
+        createNotification(app.id, app.projectTitle, `New Message: ${sender} (${senderRole})`, content.substring(0, 50) + (content.length > 50 ? '...' : ''), 'comment');
     };
 
-    const uploadFile = (applicationId: number, name: string, url: string) => {
+    const uploadFile = (applicationId: number, name: string, sender: string, senderRole: string, url: string) => {
         const app = applications.find(a => a.id === applicationId);
         if (!app) return;
 
         const newFile: ProjectFile = {
             id: Date.now(),
             name,
+            sender,
+            senderRole,
             url,
             timestamp: new Date().toLocaleString()
         };
@@ -197,7 +203,7 @@ export function ApplicationProvider({ children }: { children: React.ReactNode })
         setApplications(apps => apps.map(a => 
             a.id === applicationId ? { ...a, files: [...a.files, newFile] } : a
         ));
-        createNotification(app.id, app.projectTitle, "File Uploaded", `New file: ${name}`, 'file');
+        createNotification(app.id, app.projectTitle, "File Uploaded", `New file: ${name} by ${sender} (${senderRole})`, 'file');
     };
 
     const markAsRead = (notificationId: number) => {

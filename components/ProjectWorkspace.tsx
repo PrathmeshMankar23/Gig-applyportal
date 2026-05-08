@@ -31,14 +31,14 @@ export default function ProjectWorkspace({ application, currentUserRole, current
     const handleAddComment = (e: React.FormEvent) => {
         e.preventDefault();
         if (!commentText.trim()) return;
-        addComment(application.id, currentUserName, commentText);
+        addComment(application.id, currentUserName, currentUserRole, commentText);
         setCommentText("");
     };
 
     const handleUploadSim = () => {
         const fileName = prompt("Enter file name for simulation:");
         if (fileName) {
-            uploadFile(application.id, fileName, "#");
+            uploadFile(application.id, fileName, currentUserName, currentUserRole, "#");
         }
     };
 
@@ -133,7 +133,11 @@ export default function ProjectWorkspace({ application, currentUserRole, current
                                         ? "ml-auto bg-slate-900 text-white rounded-tr-none border-slate-800" 
                                         : "bg-white border-gray-100 rounded-tl-none text-gray-900"
                                     )}>
-                                        <p className={cn("text-[8px] font-black uppercase tracking-widest mb-1", isMe ? "text-slate-400" : "text-orange-500")}>{msg.sender}</p>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <p className={cn("text-[10px] font-black uppercase tracking-widest", isMe ? "text-slate-400" : "text-orange-500")}>
+                                                {msg.sender} <span className="opacity-60 text-[8px] font-bold">({msg.senderRole || 'User'})</span>
+                                            </p>
+                                        </div>
                                         <p className="text-xs font-bold leading-relaxed">{msg.content}</p>
                                         <p className={cn("text-[8px] font-black uppercase opacity-40 mt-1", isMe ? "text-white" : "text-gray-400")}>{msg.timestamp}</p>
                                     </div>
@@ -198,7 +202,13 @@ export default function ProjectWorkspace({ application, currentUserRole, current
                                         </div>
                                         <div>
                                             <p className="text-xs font-black text-gray-900">{file.name}</p>
-                                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">{file.timestamp}</p>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">{file.timestamp}</p>
+                                                <span className="text-[9px] text-gray-300">•</span>
+                                                <p className="text-[9px] text-orange-500 font-black uppercase tracking-tighter">
+                                                    {file.sender} <span className="text-gray-400 text-[8px] font-bold">({file.senderRole})</span>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                     <button className="p-2 text-gray-300 hover:text-gray-900 transition-colors">

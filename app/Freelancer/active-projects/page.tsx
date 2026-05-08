@@ -4,10 +4,10 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useApplications } from "@/context/ApplicationContext";
 import { cn } from "@/lib/utils";
-import { 
-    FolderCheck, 
-    ArrowRight, 
-    Calendar, 
+import {
+    FolderCheck,
+    ArrowRight,
+    Calendar,
     DollarSign,
     MessageSquare,
     Files,
@@ -40,7 +40,7 @@ export default function ActiveProjects() {
             {activeProjects.length > 0 ? (
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                     {activeProjects.map((app) => (
-                        <div 
+                        <div
                             key={app.id}
                             className="bg-white rounded-[40px] p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden"
                         >
@@ -87,18 +87,12 @@ export default function ActiveProjects() {
                                 </div>
 
                                 <div className="flex flex-col gap-3">
-                                    <button 
-                                        onClick={() => router.push(`/Freelancer/Dashboard?appId=${app.id}`)}
+                                    <button
+                                        onClick={() => router.push(`/Freelancer/projects/${app.projectId}/track`)}
                                         className="w-full flex items-center justify-center gap-3 py-5 bg-blue-600 text-white rounded-[24px] font-black uppercase tracking-widest text-xs hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all group/btn"
                                     >
                                         Open Project Workspace
                                         <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                    </button>
-                                    <button 
-                                        onClick={() => router.push(`/Freelancer/projects/${app.projectId}/track`)}
-                                        className="w-full flex items-center justify-center gap-3 py-5 bg-white text-blue-600 border border-blue-100 rounded-[24px] font-black uppercase tracking-widest text-xs hover:bg-blue-50 transition-all"
-                                    >
-                                        Track Progress
                                     </button>
                                 </div>
                             </div>
@@ -114,7 +108,7 @@ export default function ActiveProjects() {
                     <p className="text-gray-500 font-medium max-w-sm mb-10 leading-relaxed text-lg">
                         Once an admin approves your application, the project will appear here for you to collaborate and upload files.
                     </p>
-                    <button 
+                    <button
                         onClick={() => router.push("/Freelancer/applications")}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-black py-5 px-12 rounded-[24px] transition-all shadow-xl shadow-blue-100 uppercase tracking-widest text-xs"
                     >

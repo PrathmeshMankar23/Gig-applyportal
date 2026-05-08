@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     Search,
     MapPin,
-    Star,
     Briefcase,
     DollarSign,
     Clock,
@@ -14,14 +13,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+import { useProjects } from '@/context/ProjectContext';
+import { useApplications } from '@/context/ApplicationContext';
 
 const freelancerData = [
     {
         id: "sarah",
         name: "Sarah Johnson",
         location: "London, UK",
-        rating: 4.9,
-        projects: 24,
         rate: 85,
         experience: "5+ years",
         status: "Available",
@@ -32,8 +31,6 @@ const freelancerData = [
         id: "michael",
         name: "Michael Chen",
         location: "San Francisco, USA",
-        rating: 4.7,
-        projects: 15,
         rate: 60,
         experience: "3-5 years",
         status: "Available",
@@ -44,8 +41,6 @@ const freelancerData = [
         id: "elena",
         name: "Elena Rodriguez",
         location: "Madrid, Spain",
-        rating: 4.8,
-        projects: 19,
         rate: 70,
         experience: "4 years",
         status: "Busy",
@@ -55,26 +50,51 @@ const freelancerData = [
 ];
 
 export default function Freelancers() {
+    const { projects } = useProjects();
+    const { applications } = useApplications();
     const [searchQuery, setSearchQuery] = useState("");
     const [availabilityFilter, setAvailabilityFilter] = useState("All Availability");
     const [notification, setNotification] = useState<string | null>(null);
-    const [freelancers, setFreelancers] = useState(freelancerData);
+    const [baseFreelancers, setBaseFreelancers] = useState(freelancerData);
 
+    // Synchronize status from localStorage
     React.useEffect(() => {
         const sarahStatus = localStorage.getItem('profile_status_sarah');
         if (sarahStatus) {
-            setFreelancers(prev => prev.map(f => f.id === 'sarah' ? { ...f, status: sarahStatus } : f));
+            setBaseFreelancers(prev => prev.map(f => f.id === 'sarah' ? { ...f, status: sarahStatus } : f));
         }
 
-        // Listen for storage changes in other tabs
         const handleStorage = (e: StorageEvent) => {
             if (e.key === 'profile_status_sarah' && e.newValue) {
-                setFreelancers(prev => prev.map(f => f.id === 'sarah' ? { ...f, status: e.newValue || 'Available' } : f));
+                setBaseFreelancers(prev => prev.map(f => f.id === 'sarah' ? { ...f, status: e.newValue || 'Available' } : f));
             }
         };
         window.addEventListener('storage', handleStorage);
         return () => window.removeEventListener('storage', handleStorage);
     }, []);
+
+    // Calculate real project counts (Assignments + Selected Applications)
+    const freelancers = useMemo(() => {
+        return baseFreelancers.map(f => {
+            const assignedProjectIds = new Set(
+                projects.filter(p => 
+                    p.assignedTo === f.name || 
+                    (p.assignedUsers && p.assignedUsers.includes(f.name))
+                ).map(p => p.id)
+            );
+            
+            const selectedProjectIds = applications
+                .filter(app => app.applicantName === f.name && app.status === 'Selected')
+                .map(app => app.projectId);
+
+            selectedProjectIds.forEach(id => assignedProjectIds.add(id));
+            
+            return {
+                ...f,
+                projects: assignedProjectIds.size
+            };
+        });
+    }, [baseFreelancers, projects, applications]);
 
     const showNotification = (msg: string) => {
         setNotification(msg);
@@ -169,10 +189,6 @@ export default function Freelancers() {
 
                             {/* Stats Row */}
                             <div className="flex items-center gap-6 py-3 border-y border-gray-50">
-                                <div className="flex items-center gap-1.5">
-                                    <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                                    <span className="text-sm font-extrabold text-gray-900">{freelancer.rating}</span>
-                                </div>
                                 <div className="flex items-center gap-1.5">
                                     <Briefcase className="w-4 h-4 text-gray-400" />
                                     <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">{freelancer.projects} projects</span>

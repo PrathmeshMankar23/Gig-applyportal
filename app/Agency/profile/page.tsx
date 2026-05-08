@@ -8,10 +8,8 @@ import {
   Globe,
   Users,
   Calendar,
-  Star,
   Briefcase,
   Edit3,
-  Eye,
   X,
   Check,
   Upload,
@@ -19,8 +17,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useProjects } from '@/context/ProjectContext';
 
 export default function AgencyProfilePage() {
+  const { projects } = useProjects();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [agencyData, setAgencyData] = useState({
     name: "Creative Studios Inc.",
@@ -35,6 +35,12 @@ export default function AgencyProfilePage() {
     teamSize: 24,
     status: "Available"
   });
+
+  // Calculate real projects for the agency
+  const agencyProjectsCount = projects.filter(p => 
+    p.assignedTo === agencyData.name || 
+    (p.assignedUsers && p.assignedUsers.includes(agencyData.name))
+  ).length;
 
   const [tempData, setTempData] = useState(agencyData);
   const [uploadedFiles, setUploadedFiles] = useState<{name: string, size: string}[]>([]);
@@ -142,12 +148,8 @@ export default function AgencyProfilePage() {
 
             <div className="flex items-center gap-8 mt-8 pt-8 border-t border-gray-50">
               <div className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                <span className="font-bold text-gray-900">4.8 Rating</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-gray-400" />
-                <span className="font-bold text-gray-900">52 Projects Completed</span>
+                <span className="font-bold text-gray-900">{agencyProjectsCount} Projects Assigned</span>
               </div>
             </div>
           </div>

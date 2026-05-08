@@ -20,7 +20,7 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
     const resolvedParams = React.use(params);
     const id = resolvedParams.id;
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { projects, addProjectUpdate } = useProjects();
+    const { projects, addProjectUpdate, addProjectFile, removeProjectFile } = useProjects();
     const project = projects.find(p => p.id === parseInt(id));
 
     // Notification State
@@ -40,32 +40,32 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
         { title: "Backend Integration", date: "2026-05-30", status: "pending", description: "Connecting the frontend with the backend APIs." },
     ]);
 
-    // State for Files
-    const [files, setFiles] = useState([
-        { name: 'Project_Requirements.pdf', size: '2.4 MB' },
-        { name: 'Design_Mockups.fig', size: '15.8 MB' },
-        { name: 'API_Documentation.pdf', size: '1.1 MB' }
-    ]);
+    // Files are now managed via ProjectContext
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const fileSize = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-            setFiles([{ name: file.name, size: fileSize }, ...files]);
+            addProjectFile(parseInt(id), {
+                name: file.name,
+                size: fileSize,
+                sender: "Freelancer",
+                senderRole: "Freelancer",
+                url: "#"
+            });
             showNotification(`File "${file.name}" uploaded successfully!`);
         }
     };
 
-    const removeFile = (index: number) => {
-        const fileName = files[index].name;
-        setFiles(files.filter((_, i) => i !== index));
-        showNotification(`File "${fileName}" removed`);
+    const removeFile = (fileId: number) => {
+        removeProjectFile(parseInt(id), fileId);
+        showNotification(`File removed`);
     };
 
     const handleAddUpdate = (e: React.FormEvent) => {
         e.preventDefault();
         if (!updateText.trim()) return;
-        addProjectUpdate(parseInt(id), updateText, "Freelancer");
+        addProjectUpdate(parseInt(id), updateText, "Freelancer", "Freelancer");
         setUpdateText("");
         showNotification("Public update posted successfully!");
     };
@@ -183,21 +183,27 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
                             </div>
                         </div>
                         <div className="space-y-2">
-                            {files.map((file, i) => (
-                                <div key={i} className="flex justify-between items-center p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-200 transition-colors group shadow-sm">
+                            {project?.files?.map((file) => (
+                                <div key={file.id} className="flex justify-between items-center p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-200 transition-colors group shadow-sm">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2.5 bg-blue-50 text-blue-500 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
                                             <FileText className="w-5 h-5" />
                                         </div>
                                         <div>
                                             <span className="text-sm font-bold text-gray-900 block">{file.name}</span>
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{file.size}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{file.size}</span>
+                                                <span className="text-[10px] text-gray-300">•</span>
+                                                <span className="text-[10px] text-orange-500 font-black uppercase tracking-widest">
+                                                    {file.sender} ({file.senderRole})
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
                                         <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"><Download className="w-4 h-4" /></button>
                                         <button 
-                                            onClick={() => removeFile(i)}
+                                            onClick={() => removeFile(file.id)}
                                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                         >
                                             <X className="w-4 h-4" />
@@ -205,6 +211,9 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
                                     </div>
                                 </div>
                             ))}
+                            {(!project?.files || project.files.length === 0) && (
+                                <p className="text-center py-8 text-gray-400 font-bold text-xs">No files uploaded yet.</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -234,8 +243,13 @@ export default function FreelancerProjectTrackingPage({ params }: { params: Prom
                                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Past Updates</h4>
                                 {project.updates.slice().reverse().map(update => (
                                     <div key={update.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 shadow-sm">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest">
+                                                {update.sender} <span className="text-gray-400 font-bold">({update.senderRole})</span>
+                                            </span>
+                                            <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">{update.date}</span>
+                                        </div>
                                         <p className="text-sm text-gray-900 font-bold whitespace-pre-wrap leading-relaxed">{update.text}</p>
-                                        <p className="text-[9px] text-gray-400 mt-2 font-black uppercase tracking-widest">{update.date}</p>
                                     </div>
                                 ))}
                             </div>

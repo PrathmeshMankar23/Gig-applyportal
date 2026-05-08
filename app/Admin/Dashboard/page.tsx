@@ -237,17 +237,15 @@ export default function AdminDashboard() {
                                                 <>
                                                     <button
                                                         onClick={() => handleAction(req.id, 'Approved')}
-                                                        className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-                                                        title="Approve"
+                                                        className="px-3 py-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all font-black text-[10px] uppercase tracking-widest border border-emerald-100 shadow-sm shadow-emerald-50"
                                                     >
-                                                        <Check className="w-5 h-5" />
+                                                        Accept
                                                     </button>
                                                     <button
                                                         onClick={() => handleAction(req.id, 'Rejected')}
-                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                                        title="Reject"
+                                                        className="px-3 py-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all font-black text-[10px] uppercase tracking-widest border border-red-100 shadow-sm shadow-red-50"
                                                     >
-                                                        <X className="w-5 h-5" />
+                                                        Reject
                                                     </button>
                                                 </>
                                             ) : (

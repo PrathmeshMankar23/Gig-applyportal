@@ -18,8 +18,12 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useProjects } from '@/context/ProjectContext';
+import { useApplications } from '@/context/ApplicationContext';
 
 export default function FreelancerProfile() {
+  const { projects } = useProjects();
+  const { applications } = useApplications();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "Sarah Johnson",
@@ -33,6 +37,21 @@ export default function FreelancerProfile() {
     hourlyRate: "75",
     status: "Available"
   });
+
+  // Calculate real projects (Assignments + Selected Applications)
+  const assignedProjectIds = new Set(
+    projects.filter(p => 
+        p.assignedTo === profileData.name || 
+        (p.assignedUsers && p.assignedUsers.includes(profileData.name))
+    ).map(p => p.id)
+  );
+  
+  const selectedProjectIds = applications
+    .filter(app => app.applicantName === profileData.name && app.status === 'Selected')
+    .map(app => app.projectId);
+
+  selectedProjectIds.forEach(id => assignedProjectIds.add(id));
+  const projectsCount = assignedProjectIds.size;
 
   const [tempProfileData, setTempProfileData] = useState(profileData);
   const [uploadedFiles, setUploadedFiles] = useState<{name: string, size: string}[]>([]);
@@ -124,14 +143,9 @@ export default function FreelancerProfile() {
             {/* Quick Stats */}
             <div className="flex flex-wrap gap-8 pt-6 border-t border-gray-50">
               <div className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                <span className="text-gray-900 font-bold text-lg">4.9</span>
-                <span className="text-gray-400 font-medium">Rating</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-blue-500" />
-                <span className="text-gray-900 font-bold text-lg">28</span>
-                <span className="text-gray-400 font-medium">Projects Completed</span>
+                <span className="text-gray-900 font-bold text-lg">{projectsCount}</span>
+                <span className="text-gray-400 font-medium">Projects Assigned</span>
               </div>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-emerald-500" />

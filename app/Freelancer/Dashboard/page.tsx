@@ -5,7 +5,6 @@ import {
   Clock,
   CheckCircle2,
   DollarSign,
-  Star,
   TrendingUp,
   ChevronRight
 } from "lucide-react";
@@ -147,38 +146,6 @@ export default function FreelancerDashboard() {
 
         {/* Right Sidebar */}
         <div className="space-y-8">
-          {/* Monthly Metrics */}
-          <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">This Month</h2>
-
-            <div className="space-y-6">
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-500 font-medium">Hours Worked</span>
-                  <span className="text-gray-900 font-bold">142 hrs</span>
-                </div>
-                <div className="w-full bg-gray-100 h-2 rounded-full">
-                  <div className="bg-blue-600 h-2 rounded-full w-[70%]"></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-500 font-medium">Revenue Goal</span>
-                  <span className="text-gray-900 font-bold">$8,000 / $10,000</span>
-                </div>
-                <div className="w-full bg-gray-100 h-2 rounded-full">
-                  <div className="bg-emerald-500 h-2 rounded-full w-[80%]"></div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-50 flex items-center text-emerald-600 font-bold text-sm">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                +15% from last month
-              </div>
-            </div>
-          </div>
-
           {/* Recent Activity */}
           <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Recent Activity</h2>

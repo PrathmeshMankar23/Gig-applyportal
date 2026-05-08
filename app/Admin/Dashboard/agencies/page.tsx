@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     Search,
     MapPin,
-    Star,
     Briefcase,
     Globe,
     Users2,
@@ -12,6 +11,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+import { useProjects } from '@/context/ProjectContext';
+import { useApplications } from '@/context/ApplicationContext';
 
 const agencyData = [
     {
@@ -19,8 +20,6 @@ const agencyData = [
         name: "Creative Studios Inc.",
         location: "New York, USA",
         est: "2015",
-        rating: 4.7,
-        projects: 38,
         teamSize: "51-200",
         website: "www.creativestudios.com",
         status: "Available",
@@ -32,8 +31,6 @@ const agencyData = [
         name: "TechFlow Systems",
         location: "Berlin, Germany",
         est: "2018",
-        rating: 4.8,
-        projects: 22,
         teamSize: "11-50",
         website: "www.techflow.io",
         status: "Available",
@@ -45,8 +42,6 @@ const agencyData = [
         name: "Nexus Digital",
         location: "Singapore",
         est: "2020",
-        rating: 4.6,
-        projects: 14,
         teamSize: "1-10",
         website: "www.nexusdigital.sg",
         status: "Busy",
@@ -56,25 +51,50 @@ const agencyData = [
 ];
 
 export default function Agencies() {
+    const { projects } = useProjects();
+    const { applications } = useApplications();
     const [searchQuery, setSearchQuery] = useState("");
     const [specFilter, setSpecFilter] = useState("");
     const [availabilityFilter, setAvailabilityFilter] = useState("All Availability");
-    const [agencies, setAgencies] = useState(agencyData);
+    const [baseAgencies, setBaseAgencies] = useState(agencyData);
 
     React.useEffect(() => {
         const creativeStatus = localStorage.getItem('profile_status_creative');
         if (creativeStatus) {
-            setAgencies(prev => prev.map(a => a.id === 'creative' ? { ...a, status: creativeStatus } : a));
+            setBaseAgencies(prev => prev.map(a => a.id === 'creative' ? { ...a, status: creativeStatus } : a));
         }
 
         const handleStorage = (e: StorageEvent) => {
             if (e.key === 'profile_status_creative' && e.newValue) {
-                setAgencies(prev => prev.map(a => a.id === 'creative' ? { ...a, status: e.newValue || 'Available' } : a));
+                setBaseAgencies(prev => prev.map(a => a.id === 'creative' ? { ...a, status: e.newValue || 'Available' } : a));
             }
         };
         window.addEventListener('storage', handleStorage);
         return () => window.removeEventListener('storage', handleStorage);
     }, []);
+
+    // Calculate real project counts (Assignments + Selected Applications)
+    const agencies = useMemo(() => {
+        return baseAgencies.map(a => {
+            const assignedProjectIds = new Set(
+                projects.filter(p => 
+                    p.assignedTo === a.name || 
+                    (p.assignedUsers && p.assignedUsers.includes(a.name))
+                ).map(p => p.id)
+            );
+            
+            const selectedProjectIds = applications
+                .filter(app => app.applicantName === a.name && app.status === 'Selected')
+                .map(app => app.projectId);
+
+            selectedProjectIds.forEach(id => assignedProjectIds.add(id));
+            
+            return {
+                ...a,
+                projects: assignedProjectIds.size
+            };
+        });
+    }, [baseAgencies, projects, applications]);
 
     const filteredAgencies = agencies.filter(agency => {
         const matchesSearch = agency.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -163,10 +183,6 @@ export default function Agencies() {
 
                             {/* Stats Row */}
                             <div className="flex items-center gap-6 py-3 border-y border-gray-50">
-                                <div className="flex items-center gap-1.5">
-                                    <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                                    <span className="text-sm font-extrabold text-gray-900">{agency.rating}</span>
-                                </div>
                                 <div className="flex items-center gap-1.5">
                                     <Briefcase className="w-4 h-4 text-gray-400" />
                                     <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">{agency.projects} projects</span>

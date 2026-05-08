@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Search,
   Plus,
@@ -13,6 +13,8 @@ import {
   Check
 } from 'lucide-react';
 import Link from 'next/link';
+import { useProjects } from '@/context/ProjectContext';
+import { useApplications } from '@/context/ApplicationContext';
 
 // Initial mock data
 const initialMembers = [
@@ -22,7 +24,6 @@ const initialMembers = [
     role: "Senior Developer",
     email: "john@creativestudios.com",
     phone: "+1 234 567 8901",
-    projects: 3,
     initials: "JD",
     skills: ["React", "Node.js", "TypeScript"],
     status: "active"
@@ -33,7 +34,6 @@ const initialMembers = [
     role: "UI/UX Lead",
     email: "jane@creativestudios.com",
     phone: "+1 234 567 8902",
-    projects: 2,
     initials: "JDS",
     skills: ["Figma", "Adobe XD", "UI Design"],
     status: "active"
@@ -44,7 +44,6 @@ const initialMembers = [
     role: "DevOps Engineer",
     email: "mike@creativestudios.com",
     phone: "+1 234 567 8903",
-    projects: 4,
     initials: "MD",
     skills: ["AWS", "Docker", "Kubernetes"],
     status: "active"
@@ -52,6 +51,8 @@ const initialMembers = [
 ];
 
 export default function TeamMembersPage() {
+  const { projects } = useProjects();
+  const { applications } = useApplications();
   const [members, setMembers] = useState(initialMembers);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -63,7 +64,37 @@ export default function TeamMembersPage() {
     skills: ""
   });
 
-  const filteredMembers = members.filter(member => 
+  // Calculate real projects for each member (Assignments + Selected Applications)
+  const membersWithProjects = useMemo(() => {
+    return members.map(member => {
+      const assignedCount = projects.filter(p => 
+        p.assignedTo === member.name || 
+        (p.assignedUsers && p.assignedUsers.includes(member.name))
+      ).length;
+
+      const selectedAppsCount = applications.filter(app => 
+        app.applicantName === member.name && app.status === 'Selected'
+      ).length;
+
+      // Unique project IDs to avoid double counting if an app is selected and project is assigned
+      const assignedProjectIds = new Set(
+        projects.filter(p => 
+            p.assignedTo === member.name || 
+            (p.assignedUsers && p.assignedUsers.includes(member.name))
+        ).map(p => p.id)
+      );
+      
+      const selectedProjectIds = applications
+        .filter(app => app.applicantName === member.name && app.status === 'Selected')
+        .map(app => app.projectId);
+
+      selectedProjectIds.forEach(id => assignedProjectIds.add(id));
+
+      return { ...member, projects: assignedProjectIds.size };
+    });
+  }, [members, projects, applications]);
+
+  const filteredMembers = membersWithProjects.filter(member => 
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -76,9 +107,11 @@ export default function TeamMembersPage() {
     const skillsArray = newMember.skills.split(',').map(s => s.trim());
     
     const memberToAdd = {
-      ...newMember,
+      name: newMember.name,
+      role: newMember.role,
+      email: newMember.email,
+      phone: newMember.phone,
       id,
-      projects: 0,
       initials,
       skills: skillsArray,
       status: "active"
@@ -91,8 +124,8 @@ export default function TeamMembersPage() {
 
   const teamStats = [
     { label: "Total Members", value: members.length.toString(), color: "text-gray-900" },
-    { label: "On Projects", value: members.filter(m => m.projects > 0).length.toString(), color: "text-purple-600" },
-    { label: "Available", value: members.filter(m => m.projects === 0).length.toString(), color: "text-blue-500" },
+    { label: "On Projects", value: membersWithProjects.filter(m => m.projects > 0).length.toString(), color: "text-purple-600" },
+    { label: "Available", value: membersWithProjects.filter(m => m.projects === 0).length.toString(), color: "text-blue-500" },
   ];
 
   return (
@@ -187,7 +220,7 @@ export default function TeamMembersPage() {
 
             {/* View Profile Button */}
             <Link
-              href={`/Agency/portfolio?id=${member.id}&from=team`}
+              href={`/Agency/portfolio?id=${member.id === 1 ? 'sarah' : member.id === 2 ? 'michael' : 'elena'}&from=team`}
               className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 shadow-lg shadow-purple-100 transition-all flex items-center justify-center"
             >
               View Portfolio

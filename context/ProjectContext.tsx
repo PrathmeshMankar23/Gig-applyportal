@@ -7,6 +7,17 @@ export interface ProjectUpdate {
     text: string;
     date: string;
     sender: string;
+    senderRole: string;
+}
+
+export interface ProjectFile {
+    id: number;
+    name: string;
+    size: string;
+    date: string;
+    sender: string;
+    senderRole: string;
+    url: string;
 }
 
 export interface Project {
@@ -26,6 +37,7 @@ export interface Project {
     assignedTo: string;
     assignedUsers?: string[];
     updates?: ProjectUpdate[];
+    files?: ProjectFile[];
 }
 
 interface ProjectContextType {
@@ -35,7 +47,9 @@ interface ProjectContextType {
     updateProject: (project: Project) => void;
     deleteProject: (id: number) => void;
     addCategory: (category: string) => void;
-    addProjectUpdate: (projectId: number, text: string, sender: string) => void;
+    addProjectUpdate: (projectId: number, text: string, sender: string, senderRole: string) => void;
+    addProjectFile: (projectId: number, file: Omit<ProjectFile, 'id' | 'date'>) => void;
+    removeProjectFile: (projectId: number, fileId: number) => void;
     assignProject: (projectId: number, assignedTo: string) => void;
 }
 
@@ -167,16 +181,40 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const addProjectUpdate = (projectId: number, text: string, sender: string) => {
+    const addProjectUpdate = (projectId: number, text: string, sender: string, senderRole: string) => {
         setProjects(prev => prev.map(p => {
             if (p.id === projectId) {
                 const newUpdate: ProjectUpdate = {
                     id: Date.now(),
                     text,
                     date: new Date().toLocaleString(),
-                    sender
+                    sender,
+                    senderRole
                 };
                 return { ...p, updates: [...(p.updates || []), newUpdate] };
+            }
+            return p;
+        }));
+    };
+
+    const addProjectFile = (projectId: number, fileData: Omit<ProjectFile, 'id' | 'date'>) => {
+        setProjects(prev => prev.map(p => {
+            if (p.id === projectId) {
+                const newFile: ProjectFile = {
+                    ...fileData,
+                    id: Date.now(),
+                    date: new Date().toLocaleString()
+                };
+                return { ...p, files: [...(p.files || []), newFile] };
+            }
+            return p;
+        }));
+    };
+
+    const removeProjectFile = (projectId: number, fileId: number) => {
+        setProjects(prev => prev.map(p => {
+            if (p.id === projectId) {
+                return { ...p, files: (p.files || []).filter(f => f.id !== fileId) };
             }
             return p;
         }));
@@ -200,7 +238,18 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <ProjectContext.Provider value={{ projects, categories, addProject, updateProject, deleteProject, addCategory, addProjectUpdate, assignProject }}>
+        <ProjectContext.Provider value={{ 
+            projects, 
+            categories, 
+            addProject, 
+            updateProject, 
+            deleteProject, 
+            addCategory, 
+            addProjectUpdate, 
+            addProjectFile,
+            removeProjectFile,
+            assignProject 
+        }}>
             {children}
         </ProjectContext.Provider>
     );

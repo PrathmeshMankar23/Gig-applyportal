@@ -7,16 +7,14 @@ import {
     Phone,
     MapPin,
     Globe,
-    Star,
     Briefcase,
-    Calendar,
     ArrowLeft,
     ExternalLink,
     CheckCircle2,
-    Award,
     Clock
 } from 'lucide-react';
 import Link from 'next/link';
+import { useProjects } from '@/context/ProjectContext';
 
 // Mock Data
 const profiles: any = {
@@ -29,16 +27,29 @@ const profiles: any = {
         phone: "+1 234 567 8900",
         location: "New York, USA",
         website: "portfolio.sarahjohnson.com",
-        rating: 4.9,
-        completed: 28,
         skills: ["React", "Node.js", "TypeScript", "AWS", "Docker", "Git"],
-        projects: [
-            { name: "E-commerce Redesign", description: "Led the frontend migration to Next.js 14, improving performance by 40%.", date: "2025" },
-            { name: "SaaS Dashboard", description: "Built a real-time data visualization dashboard for a fintech startup.", date: "2024" }
-        ],
-        testimonials: [
-            { from: "TechStore Inc.", text: "Sarah is an exceptional developer who delivered high-quality code on time." }
-        ]
+    },
+    'michael': {
+        name: "Michael Chen",
+        type: "Freelancer",
+        role: "Backend Engineer",
+        bio: "Backend specialist with a focus on Python, Django, and cloud infrastructure.",
+        email: "michael.c@email.com",
+        phone: "+1 234 567 8902",
+        location: "San Francisco, USA",
+        website: "michaelchen.dev",
+        skills: ["Python", "Django", "PostgreSQL", "AWS", "Redis"],
+    },
+    'elena': {
+        name: "Elena Rodriguez",
+        type: "Freelancer",
+        role: "UI/UX Designer",
+        bio: "Creative designer focused on building intuitive and beautiful user interfaces.",
+        email: "elena.r@email.com",
+        phone: "+34 912 345 678",
+        location: "Madrid, Spain",
+        website: "elena.design",
+        skills: ["Figma", "UI/UX", "Adobe XD", "Prototyping"],
     },
     'creative': {
         name: "Creative Studios Inc.",
@@ -49,16 +60,7 @@ const profiles: any = {
         phone: "+1 234 567 8901",
         location: "San Francisco, USA",
         website: "www.creativestudios.com",
-        rating: 4.8,
-        completed: 52,
         skills: ["Web Development", "Mobile Apps", "UI/UX Design", "Branding"],
-        projects: [
-            { name: "Banking Mobile App", description: "Developed a cross-platform mobile app with high security standards.", date: "2025" },
-            { name: "Enterprise CMS", description: "Custom CMS built for a Fortune 500 company.", date: "2024" }
-        ],
-        testimonials: [
-            { from: "Global Bank", text: "Professional, creative, and highly technically proficient agency." }
-        ]
     }
 };
 
@@ -67,6 +69,13 @@ function PortfolioContent() {
     const id = searchParams.get('id') || 'sarah';
     const from = searchParams.get('from') || 'dashboard';
     const profile = profiles[id] || profiles['sarah'];
+    const { projects } = useProjects();
+
+    // Filter projects where this user is assigned
+    const assignedProjects = projects.filter(p => 
+        p.assignedTo === profile.name || 
+        (p.assignedUsers && p.assignedUsers.includes(profile.name))
+    );
 
     const backPath = from === 'freelancers' 
         ? '/Admin/Dashboard/freelancers' 
@@ -116,9 +125,7 @@ function PortfolioContent() {
                         </div>
 
                         <div className="flex flex-wrap justify-center md:justify-start gap-8 mt-10 pt-10 border-t border-gray-50">
-                            <Metric icon={<Star className="text-amber-400 fill-amber-400" />} label="Rating" value={profile.rating} />
-                            <Metric icon={<CheckCircle2 className="text-emerald-500" />} label="Projects" value={profile.completed} />
-                            <Metric icon={<Award className="text-blue-500" />} label="Success" value="100%" />
+                            <Metric icon={<CheckCircle2 className="text-emerald-500" />} label="Projects" value={assignedProjects.length} />
                         </div>
                     </div>
                 </div>
@@ -138,18 +145,23 @@ function PortfolioContent() {
                                 <h3 className="text-2xl font-bold text-gray-900">Featured Projects</h3>
                             </div>
                             <div className="space-y-8">
-                                {profile.projects.map((project: any, i: number) => (
+                                {assignedProjects.length > 0 ? assignedProjects.map((project: any, i: number) => (
                                     <div key={i} className="group cursor-pointer">
                                         <div className="flex justify-between items-start mb-2">
-                                            <h4 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{project.name}</h4>
-                                            <span className="text-gray-400 font-bold">{project.date}</span>
+                                            <h4 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{project.title}</h4>
+                                            <span className="text-emerald-500 font-bold uppercase text-[10px] tracking-widest bg-emerald-50 px-2 py-0.5 rounded">{project.status}</span>
                                         </div>
-                                        <p className="text-gray-500 font-medium mb-4">{project.description}</p>
+                                        <p className="text-gray-500 font-medium mb-4 line-clamp-2">{project.description}</p>
                                         <div className="flex items-center gap-2 text-blue-600 font-bold text-sm">
-                                            View Case Study <ExternalLink className="w-4 h-4" />
+                                            View Project <ExternalLink className="w-4 h-4" />
                                         </div>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div className="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-gray-200">
+                                        <Briefcase className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                                        <p className="text-gray-400 font-bold">No active or completed projects found.</p>
+                                    </div>
+                                )}
                             </div>
                         </section>
                     </div>
@@ -165,18 +177,6 @@ function PortfolioContent() {
                                     </span>
                                 ))}
                             </div>
-                        </section>
-
-                        <section className="bg-gradient-to-br from-slate-900 to-black rounded-[32px] p-10 text-white shadow-2xl">
-                            <h3 className="text-xl font-bold mb-6">Testimonials</h3>
-                            {profile.testimonials.map((t: any, i: number) => (
-                                <div key={i} className="space-y-4">
-                                    <p className="text-gray-300 italic font-medium leading-relaxed">
-                                        "{t.text}"
-                                    </p>
-                                    <p className="font-bold text-emerald-400 text-sm">— {t.from}</p>
-                                </div>
-                            ))}
                         </section>
                     </div>
                 </div>

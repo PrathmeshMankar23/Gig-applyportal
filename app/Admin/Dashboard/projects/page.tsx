@@ -239,9 +239,9 @@ export default function Projects() {
                                         showNotification("Project deleted successfully");
                                     }
                                 }}
-                                className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all border border-red-100 shadow-sm shadow-red-100"
+                                className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg font-bold text-xs hover:bg-red-600 hover:text-white transition-all border border-red-100 shadow-sm shadow-red-100"
                             >
-                                <X className="w-4 h-4" />
+                                Delete
                             </button>
                         </div>
 

@@ -262,22 +262,20 @@ export default function AdminRequestsPage() {
                                     <button 
                                         onClick={() => handleAction(selectedApp.id, 'Selected')}
                                         className={cn(
-                                            "p-3 rounded-2xl transition-all shadow-sm",
+                                            "px-4 py-2 rounded-xl transition-all shadow-sm font-black text-xs uppercase tracking-widest",
                                             selectedApp.status === 'Selected' ? "bg-emerald-500 text-white shadow-emerald-200" : "bg-white text-emerald-600 border border-emerald-100 hover:bg-emerald-50"
                                         )}
-                                        title="Select"
                                     >
-                                        <Check className="w-5 h-5" strokeWidth={3} />
+                                        Accept
                                     </button>
                                     <button 
                                         onClick={() => handleAction(selectedApp.id, 'Rejected')}
                                         className={cn(
-                                            "p-3 rounded-2xl transition-all shadow-sm",
+                                            "px-4 py-2 rounded-xl transition-all shadow-sm font-black text-xs uppercase tracking-widest",
                                             selectedApp.status === 'Rejected' ? "bg-red-500 text-white shadow-red-200" : "bg-white text-red-600 border border-red-100 hover:bg-red-50"
                                         )}
-                                        title="Reject"
                                     >
-                                        <X className="w-5 h-5" strokeWidth={3} />
+                                        Reject
                                     </button>
                                 </div>
                             </div>
