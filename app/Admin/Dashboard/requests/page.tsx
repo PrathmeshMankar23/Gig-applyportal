@@ -75,7 +75,7 @@ export default function AdminRequestsPage() {
     const handleAddComment = (e: React.FormEvent) => {
         e.preventDefault();
         if (!commentText.trim() || !selectedApp) return;
-        addComment(selectedApp.id, "Admin", commentText);
+        addComment(selectedApp.id, "Admin", "Admin", commentText);
         setCommentText("");
     };
 
@@ -83,7 +83,7 @@ export default function AdminRequestsPage() {
         if (!selectedApp) return;
         const fileName = prompt("Enter file name (Simulation):", "Project_Brief.pdf");
         if (fileName) {
-            uploadFile(selectedApp.id, fileName, "#");
+            uploadFile(selectedApp.id, fileName, "Admin", "Admin", "#");
         }
     };
 

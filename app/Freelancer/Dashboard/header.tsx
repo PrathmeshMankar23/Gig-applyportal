@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Bell, Search, UserCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export default function Header() {
   const [userName, setUserName] = useState('Sarah Johnson');
