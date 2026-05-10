@@ -16,8 +16,12 @@ export function ApplyModal({ isOpen, onClose, projectId, projectTitle, role }: A
     const { addApplication } = useApplications();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
+    const [fileData, setFileData] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
         coverLetter: '',
         budget: '',
         duration: '',
@@ -35,13 +39,18 @@ export function ApplyModal({ isOpen, onClose, projectId, projectTitle, role }: A
         addApplication({
             projectId: projectId,
             projectTitle: projectTitle,
-            applicantName: role === 'freelancer' ? "Sarah Johnson" : "Creative Studios Inc.",
+            applicantName: formData.name || (role === 'freelancer' ? "Freelancer User" : "Agency User"),
             applicantRole: role,
-            email: role === 'freelancer' ? "sarah.j@email.com" : "contact@creativestudios.com",
+            email: formData.email || "user@example.com",
+            phone: formData.phone,
+            portfolioUrl: formData.portfolioUrl,
+            portfolioPdf: fileName,
+            portfolioPdfData: fileData,
+            experience: formData.experience,
             budget: formData.budget,
             duration: formData.duration,
             coverLetter: formData.coverLetter,
-            profileId: role === 'freelancer' ? 'sarah' : 'creative'
+            profileId: `user-${Date.now()}`
         });
 
         setIsSubmitted(true);
@@ -82,15 +91,52 @@ export function ApplyModal({ isOpen, onClose, projectId, projectTitle, role }: A
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <label className="block text-sm font-black text-gray-900 mb-3 uppercase tracking-widest">Full Name *</label>
+                                <input 
+                                    required
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-bold text-gray-900 shadow-sm"
+                                    placeholder="Enter your full name"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-black text-gray-900 mb-3 uppercase tracking-widest">Email Address *</label>
+                                <input 
+                                    required
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-bold text-gray-900 shadow-sm"
+                                    placeholder="your.email@example.com"
+                                />
+                            </div>
+                        </div>
+
                         <div>
-                            <label className="block text-sm font-black text-gray-900 mb-3 uppercase tracking-widest">Cover Letter *</label>
+                            <label className="block text-sm font-black text-gray-900 mb-3 uppercase tracking-widest">Phone Number *</label>
+                            <input 
+                                required
+                                type="tel"
+                                value={formData.phone}
+                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-bold text-gray-900 shadow-sm"
+                                placeholder="+1 (555) 000-0000"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-black text-gray-900 mb-3 uppercase tracking-widest">Why do you want to work on this project? *</label>
                             <textarea 
                                 required
                                 rows={6}
                                 value={formData.coverLetter}
                                 onChange={(e) => setFormData({...formData, coverLetter: e.target.value})}
                                 className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-medium text-gray-900 resize-none shadow-sm"
-                                placeholder="Explain why you're the best fit for this project..."
+                                placeholder="Explain why you're the best fit for this role and how your skills align with the project goals..."
                             />
                         </div>
 
@@ -143,11 +189,25 @@ export function ApplyModal({ isOpen, onClose, projectId, projectTitle, role }: A
                         </div>
 
                         <div>
-                            <label className="block text-sm font-black text-gray-900 mb-4 uppercase tracking-widest">Upload Documents (Portfolio, Resume, etc.)</label>
+                            <label className="block text-sm font-black text-gray-900 mb-4 uppercase tracking-widest">Upload Portfolio (PDF)</label>
                             <input 
                                 type="file" 
+                                accept=".pdf"
                                 ref={fileInputRef} 
-                                onChange={(e) => setFileName(e.target.files?.[0]?.name || null)}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setFileName(file.name);
+                                        const reader = new FileReader();
+                                        reader.onload = (event) => {
+                                            setFileData(event.target?.result as string);
+                                        };
+                                        reader.readAsDataURL(file);
+                                    } else {
+                                        setFileName(null);
+                                        setFileData(null);
+                                    }
+                                }}
                                 className="hidden" 
                             />
                             <div 
@@ -155,8 +215,8 @@ export function ApplyModal({ isOpen, onClose, projectId, projectTitle, role }: A
                                 className="border-2 border-dashed border-gray-200 rounded-[32px] p-12 text-center hover:border-blue-500 hover:bg-blue-50/10 transition-all cursor-pointer group bg-gray-50/30"
                             >
                                 <Upload className="w-10 h-10 mx-auto text-gray-400 group-hover:text-blue-500 mb-4" />
-                                <p className="text-gray-900 font-black text-lg">{fileName || "Click to upload or drag and drop"}</p>
-                                <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">PDF, DOC, images up to 10MB</p>
+                                <p className="text-gray-900 font-black text-lg">{fileName || "Click to upload your portfolio PDF"}</p>
+                                <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">PDF format up to 10MB</p>
                             </div>
                         </div>
 

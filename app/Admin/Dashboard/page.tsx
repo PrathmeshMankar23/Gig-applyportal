@@ -18,12 +18,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProjects } from "@/context/ProjectContext";
-import { useApplications } from "@/context/ApplicationContext";
+import { useApplications, Application } from "@/context/ApplicationContext";
+import { useRegistration } from "@/context/RegistrationContext";
 
 export default function AdminDashboard() {
-    const { projects } = useProjects();
-    const { applications } = useApplications();
-    
+    const { projects, assignProject } = useProjects();
+    const { applications, updateApplicationStatus } = useApplications();
+    const { registrations } = useRegistration();
+
     // State for filtering
     const [statusFilter, setStatusFilter] = useState('All');
     const [typeFilter, setTypeFilter] = useState('All');
@@ -32,21 +34,19 @@ export default function AdminDashboard() {
     // Notification State
     const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
 
-    // State for Requests
-    const [requests, setRequests] = useState([
-        { id: 1, type: "freelancer", name: "Sarah Johnson", email: "sarah.j@email.com", date: "2026-04-24", status: "Pending" },
-        { id: 2, type: "agency", name: "Creative Studios Inc.", email: "contact@creativestudios.com", date: "2026-04-23", status: "Pending" },
-        { id: 3, type: "freelancer", name: "Michael Chen", email: "m.chen@tech.com", date: "2026-04-22", status: "Approved" },
-        { id: 4, type: "agency", name: "Digital Solutions", email: "info@digitalsol.com", date: "2026-04-21", status: "Rejected" }
-    ]);
-
     // Handlers
-    const handleAction = (id: number, newStatus: string) => {
-        setRequests(prev => prev.map(req =>
-            req.id === id ? { ...req, status: newStatus } : req
-        ));
+    const handleAction = (id: number, newStatus: Application['status']) => {
+        updateApplicationStatus(id, newStatus);
 
-        const reqName = requests.find(r => r.id === id)?.name;
+        // If selected, update the project context as well
+        if (newStatus === 'Selected') {
+            const app = applications.find(a => a.id === id);
+            if (app) {
+                assignProject(app.projectId, app.applicantName);
+            }
+        }
+
+        const reqName = applications.find(r => r.id === id)?.applicantName;
         showNotification(`${reqName} has been ${newStatus.toLowerCase()} successfully!`);
     };
 
@@ -56,19 +56,24 @@ export default function AdminDashboard() {
     };
 
     // Stats Logic
+    const approvedFreelancers = registrations.filter(r => r.type === 'freelancer' && r.status === 'Approved').length;
+    const approvedAgencies = registrations.filter(r => r.type === 'agency' && r.status === 'Approved').length;
+    const pendingRegistrations = registrations.filter(r => r.status === 'Pending').length;
+
     const stats = [
         { label: "Total Projects", value: projects.length, icon: FolderOpen, color: "text-blue-600", bgColor: "bg-blue-300", borderColor: "border-blue-400", href: "/Admin/projects" },
-        { label: "Total Freelancers", value: 3, icon: Users, color: "text-emerald-600", bgColor: "bg-emerald-300", borderColor: "border-emerald-400", href: "/Admin/freelancers" },
-        { label: "Total Agency", value: 3, icon: Building2, color: "text-purple-600", bgColor: "bg-purple-300", borderColor: "border-purple-400", href: "/Admin/agencies" },
-        { label: "Total Request", value: applications.length, icon: Clock, color: "text-orange-500", bgColor: "bg-orange-300", borderColor: "border-orange-400", href: "/Admin/requests" },
+        { label: "Total Freelancers", value: approvedFreelancers, icon: Users, color: "text-emerald-600", bgColor: "bg-emerald-300", borderColor: "border-emerald-400", href: "/Admin/freelancers" },
+        { label: "Total Agency", value: approvedAgencies, icon: Building2, color: "text-purple-600", bgColor: "bg-purple-300", borderColor: "border-purple-400", href: "/Admin/agencies" },
+        { label: "New Requests", value: pendingRegistrations, icon: Clock, color: "text-orange-500", bgColor: "bg-orange-300", borderColor: "border-orange-400", href: "/Admin/requests" },
     ];
 
     // Filtering Logic
-    const filteredRequests = requests.filter(req => {
+    const filteredRequests = applications.filter(req => {
         const matchesStatus = statusFilter === 'All' || req.status === statusFilter;
-        const matchesType = typeFilter === 'All' || req.type.toLowerCase() === typeFilter.toLowerCase();
-        const matchesSearch = req.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            req.email.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesType = typeFilter === 'All' || req.applicantRole.toLowerCase() === typeFilter.toLowerCase();
+        const matchesSearch = req.applicantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            req.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            req.projectTitle.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesStatus && matchesType && matchesSearch;
     });
 
@@ -89,7 +94,7 @@ export default function AdminDashboard() {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Admin Dashboard</h1>
-                <p className="text-gray-500 mt-1 font-medium text-sm">Manage registration requests and platform activity</p>
+                <p className="text-gray-500 mt-1 font-medium text-sm">Manage project applications and platform activity</p>
             </div>
 
             {/* Stats Grid */}
@@ -119,8 +124,8 @@ export default function AdminDashboard() {
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl font-black text-gray-900 tracking-tight">Project Requests</h2>
-                        <p className="text-gray-500 font-medium text-xs mt-1">Review and manage incoming registration requests</p>
+                        <h2 className="text-2xl font-black text-gray-900 tracking-tight">Project Applications</h2>
+                        <p className="text-gray-500 font-medium text-xs mt-1">Review and manage incoming applications for projects</p>
                     </div>
                 </div>
 
@@ -135,7 +140,8 @@ export default function AdminDashboard() {
                         >
                             <option value="All">All Status</option>
                             <option value="Pending">Pending</option>
-                            <option value="Approved">Approved</option>
+                            <option value="Selected">Selected</option>
+                            <option value="Rejected">Rejected</option>
                         </select>
                         <ChevronRight className="w-4 h-4 absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none group-hover:text-slate-900 transition-colors" />
                     </div>
@@ -161,14 +167,14 @@ export default function AdminDashboard() {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search by name or email..."
+                            placeholder="Search by name, email or project..."
                             className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:bg-white outline-none transition-all text-xs font-bold"
                         />
                     </div>
 
                     {/* Clear Button */}
                     {(statusFilter !== 'All' || typeFilter !== 'All' || searchQuery !== "") && (
-                        <button 
+                        <button
                             onClick={() => {
                                 setStatusFilter('All');
                                 setTypeFilter('All');
@@ -186,37 +192,38 @@ export default function AdminDashboard() {
             {/* Table Container - Fixed Width Logic */}
             <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse table-auto">
+                    <table className="w-full text-left border-collapse table-fixed">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-100">
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Type</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Type</th>
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Name</th>
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">Email</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Status</th>
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Portfolio</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {filteredRequests.map((req) => (
                                 <tr key={req.id} className="hover:bg-gray-50/30 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${req.type === 'freelancer' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
-                                            {req.type === 'freelancer' ? <Briefcase className="w-3 h-3" /> : <Building2 className="w-3 h-3" />}
-                                            {req.type}
+                                    <td className="px-6 py-4 text-center">
+                                        <span className={`inline-flex items-center justify-center min-w-[90px] gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${req.applicantRole === 'freelancer' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
+                                            {req.applicantRole === 'freelancer' ? <Briefcase className="w-3 h-3" /> : <Building2 className="w-3 h-3" />}
+                                            {req.applicantRole}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="max-w-[140px]">
-                                            <p className="font-extrabold text-gray-900 text-sm truncate">{req.name}</p>
-                                            <p className="text-[10px] text-gray-400 font-bold lg:hidden truncate">{req.email}</p>
+                                        <div className="max-w-full">
+                                            <p className="font-extrabold text-gray-900 text-sm truncate">{req.applicantName}</p>
+                                            <p className="text-[10px] text-gray-400 font-bold lg:hidden mt-0.5 truncate">{req.email}</p>
+                                            <p className="text-[10px] text-gray-400 font-bold mt-0.5 truncate">For: {req.projectTitle}</p>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 hidden lg:table-cell">
-                                        <p className="text-gray-500 font-medium text-sm truncate max-w-[180px]">{req.email}</p>
+                                        <p className="text-gray-500 font-medium text-sm truncate">{req.email}</p>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border ${req.status === 'Approved' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                    <td className="px-6 py-4 text-center">
+                                        <span className={`inline-block min-w-[70px] text-center px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border ${req.status === 'Selected' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                                             req.status === 'Rejected' ? 'bg-red-50 text-red-600 border-red-100' :
                                                 'bg-orange-50 text-orange-600 border-orange-100'
                                             }`}>
@@ -225,18 +232,18 @@ export default function AdminDashboard() {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <Link
-                                            href={`/Admin/portfolio?id=${req.id}`}
+                                            href={`/Admin/portfolio?id=${req.profileId}&appId=${req.id}`}
                                             className="inline-flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm"
                                         >
                                             <Eye className="w-4 h-4" />
                                         </Link>
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-1">
+                                    <td className="px-6 py-4 text-center">
+                                        <div className="flex items-center justify-center gap-2">
                                             {req.status === 'Pending' ? (
                                                 <>
                                                     <button
-                                                        onClick={() => handleAction(req.id, 'Approved')}
+                                                        onClick={() => handleAction(req.id, 'Selected')}
                                                         className="px-3 py-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all font-black text-[10px] uppercase tracking-widest border border-emerald-100 shadow-sm shadow-emerald-50"
                                                     >
                                                         Accept

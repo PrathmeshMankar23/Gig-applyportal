@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useProjects } from '@/context/ProjectContext';
+import { useApplications } from '@/context/ApplicationContext';
 
 // Mock Data
 const profiles: any = {
@@ -67,9 +68,32 @@ const profiles: any = {
 function PortfolioContent() {
     const searchParams = useSearchParams();
     const id = searchParams.get('id') || 'sarah';
+    const appId = searchParams.get('appId');
     const from = searchParams.get('from') || 'dashboard';
-    const profile = profiles[id] || profiles['sarah'];
+    
     const { projects } = useProjects();
+    const { applications } = useApplications();
+    
+    // Find dynamic application data if appId is provided
+    const dynamicApp = appId ? applications.find(a => a.id.toString() === appId) : null;
+    
+    // Base profile (fallback to mock data)
+    let profile = profiles[id] || profiles['sarah'];
+    
+    // Override with real application data if it exists
+    if (dynamicApp) {
+        profile = {
+            ...profile,
+            name: dynamicApp.applicantName || profile.name,
+            type: dynamicApp.applicantRole === 'agency' ? 'Agency' : 'Freelancer',
+            email: dynamicApp.email || profile.email,
+            phone: dynamicApp.phone || profile.phone,
+            bio: dynamicApp.coverLetter || profile.bio,
+            website: dynamicApp.portfolioUrl !== undefined ? dynamicApp.portfolioUrl : profile.website,
+            portfolioPdf: dynamicApp.portfolioPdf !== undefined ? dynamicApp.portfolioPdf : profile.portfolioPdf,
+            portfolioPdfData: dynamicApp.portfolioPdfData !== undefined ? dynamicApp.portfolioPdfData : profile.portfolioPdfData,
+        };
+    }
 
     // Filter projects where this user is assigned
     const assignedProjects = projects.filter(p => 
@@ -136,31 +160,43 @@ function PortfolioContent() {
                             <p className="text-gray-500 text-lg leading-relaxed font-medium">
                                 {profile.bio}
                             </p>
-                        </section>
 
-                        <section className="bg-white rounded-[32px] p-10 border border-gray-100 shadow-sm">
-                            <div className="flex justify-between items-center mb-8">
-                                <h3 className="text-2xl font-bold text-gray-900">Featured Projects</h3>
-                            </div>
-                            <div className="space-y-8">
-                                {assignedProjects.length > 0 ? assignedProjects.map((project: any, i: number) => (
-                                    <div key={i} className="group cursor-pointer">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h4 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{project.title}</h4>
-                                            <span className="text-emerald-500 font-bold uppercase text-[10px] tracking-widest bg-emerald-50 px-2 py-0.5 rounded">{project.status}</span>
+                            {(profile.portfolioPdf || (profile.website && profile.website !== 'No website provided' && profile.website !== 'portfolio.sarahjohnson.com')) && (
+                                <div className="mt-10 pt-10 border-t border-gray-50">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-6">Portfolio / Attachments</h3>
+                                    <button 
+                                        onClick={() => {
+                                            if (profile.portfolioPdfData) {
+                                                const pdfWindow = window.open("");
+                                                if (pdfWindow) {
+                                                    pdfWindow.document.write(
+                                                        `<iframe width='100%' height='100%' src='${profile.portfolioPdfData}' style='border:none; margin:0; padding:0; overflow:hidden; z-index:999999;'></iframe>`
+                                                    );
+                                                    pdfWindow.document.title = profile.portfolioPdf || "Portfolio PDF";
+                                                    pdfWindow.document.body.style.margin = "0";
+                                                } else {
+                                                    alert("Please allow pop-ups to view the PDF.");
+                                                }
+                                            } else if (profile.website && profile.website.startsWith('http')) {
+                                                window.open(profile.website, '_blank');
+                                            } else {
+                                                alert("Portfolio file data not found. Please ask the applicant to re-upload.");
+                                            }
+                                        }}
+                                        className="inline-flex items-center justify-between w-full sm:w-auto min-w-[300px] p-4 bg-gray-50 hover:bg-blue-50 border-2 border-dashed border-gray-200 hover:border-blue-200 rounded-2xl transition-all group"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-3 bg-white rounded-xl shadow-sm text-blue-600 group-hover:scale-110 transition-transform">
+                                                <Briefcase className="w-6 h-6" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-gray-900 font-black text-sm">{profile.portfolioPdf ? profile.portfolioPdf : 'View Portfolio Website'}</p>
+                                                <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mt-0.5">{profile.portfolioPdf ? 'PDF Document' : 'External Link'}</p>
+                                            </div>
                                         </div>
-                                        <p className="text-gray-500 font-medium mb-4 line-clamp-2">{project.description}</p>
-                                        <div className="flex items-center gap-2 text-blue-600 font-bold text-sm">
-                                            View Project <ExternalLink className="w-4 h-4" />
-                                        </div>
-                                    </div>
-                                )) : (
-                                    <div className="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-gray-200">
-                                        <Briefcase className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                                        <p className="text-gray-400 font-bold">No active or completed projects found.</p>
-                                    </div>
-                                )}
-                            </div>
+                                    </button>
+                                </div>
+                            )}
                         </section>
                     </div>
 

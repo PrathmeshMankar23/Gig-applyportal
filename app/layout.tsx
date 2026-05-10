@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import { ThemeProvider } from "@/components/theme-provider";
 import { ProjectProvider } from "@/context/ProjectContext";
 import { ApplicationProvider } from "@/context/ApplicationContext";
+import { RegistrationProvider } from "@/context/RegistrationContext";
 
 export default function RootLayout({
   children,
@@ -41,7 +42,9 @@ export default function RootLayout({
         >
           <ProjectProvider>
             <ApplicationProvider>
-              {children}
+              <RegistrationProvider>
+                {children}
+              </RegistrationProvider>
             </ApplicationProvider>
           </ProjectProvider>
         </ThemeProvider>

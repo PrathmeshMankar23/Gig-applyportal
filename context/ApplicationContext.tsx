@@ -26,6 +26,11 @@ export interface Application {
     applicantName: string;
     applicantRole: 'freelancer' | 'agency';
     email: string;
+    phone?: string;
+    portfolioUrl?: string;
+    portfolioPdf?: string | null;
+    portfolioPdfData?: string | null;
+    experience?: string;
     budget: string;
     duration: string;
     coverLetter: string;

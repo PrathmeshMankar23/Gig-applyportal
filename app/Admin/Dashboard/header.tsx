@@ -10,11 +10,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useRegistration } from "@/context/RegistrationContext";
 
 
 export default function AdminHeader() {
     const { setTheme, theme } = useTheme();
     const router = useRouter();
+    const { registrations } = useRegistration();
+
+    const pendingRegs = registrations.filter(r => r.status === 'Pending');
+    const pendingCount = pendingRegs.length;
 
     const handleLogout = () => {
         router.push("/auth/admin-login");
@@ -38,36 +43,37 @@ export default function AdminHeader() {
                     <DropdownMenuTrigger asChild>
                         <button className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors relative outline-none">
                             <Bell className="w-5 h-5" />
-                            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                            {pendingCount > 0 && (
+                                <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                            )}
                         </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80 mt-2 rounded-xl p-4">
+                    <DropdownMenuContent align="end" className="w-80 mt-2 rounded-xl p-4 z-50">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="font-bold text-gray-900">Notifications</h3>
-                            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">2 New</span>
+                            {pendingCount > 0 && (
+                                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">{pendingCount} New</span>
+                            )}
                         </div>
-                        <div className="space-y-4">
-                            <div className="flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                                    <Bell className="w-4 h-4 text-blue-600" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-bold text-gray-900">New registration request</p>
-                                    <p className="text-[10px] text-gray-500 font-medium">Sarah Johnson applied as Freelancer</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                                <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
-                                    <Bell className="w-4 h-4 text-emerald-600" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-bold text-gray-900">Project Approved</p>
-                                    <p className="text-[10px] text-gray-500 font-medium">"E-commerce Redesign" is now live</p>
-                                </div>
-                            </div>
+                        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                            {pendingCount === 0 ? (
+                                <p className="text-xs text-gray-500 text-center py-4">No new notifications</p>
+                            ) : (
+                                pendingRegs.slice(0, 5).map(reg => (
+                                    <div key={reg.id} className="flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors" onClick={() => router.push('/Admin/requests')}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${reg.type === 'freelancer' ? 'bg-blue-50' : 'bg-purple-50'}`}>
+                                            <Bell className={`w-4 h-4 ${reg.type === 'freelancer' ? 'text-blue-600' : 'text-purple-600'}`} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-gray-900">New registration request</p>
+                                            <p className="text-[10px] text-gray-500 font-medium">{reg.name} applied as {reg.type}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
-                        <Link href="/Admin/notifications" className="w-full mt-4 py-2 text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest border-t border-gray-50 pt-4 text-center block">
-                            View all notifications
+                        <Link href="/Admin/requests" className="w-full mt-4 py-2 text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-widest border-t border-gray-50 pt-4 text-center block">
+                            View all requests
                         </Link>
                     </DropdownMenuContent>
                 </DropdownMenu>
