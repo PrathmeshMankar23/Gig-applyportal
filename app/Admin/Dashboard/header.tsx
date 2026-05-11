@@ -1,7 +1,6 @@
 "use client";
 
-import { Sun, Moon, Bell, ChevronDown } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Bell, ChevronDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,7 +13,6 @@ import { useRegistration } from "@/context/RegistrationContext";
 
 
 export default function AdminHeader() {
-    const { setTheme, theme } = useTheme();
     const router = useRouter();
     const { registrations } = useRegistration();
 
@@ -33,17 +31,7 @@ export default function AdminHeader() {
             </div>
 
             {/* Right Side: Tools & Profile */}
-            <div className="flex items-center gap-6">                {/* Theme Toggle */}
-                <button
-                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                    className="p-2.5 rounded-xl bg-gray-50 dark:bg-slate-900 text-gray-600 dark:text-gray-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all outline-none"
-                >
-                    {theme === "dark" ? (
-                        <Sun className="w-5 h-5 animate-in zoom-in duration-300" />
-                    ) : (
-                        <Moon className="w-5 h-5 animate-in zoom-in duration-300" />
-                    )}
-                </button>
+            <div className="flex items-center gap-6">
                 {/* Notifications */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

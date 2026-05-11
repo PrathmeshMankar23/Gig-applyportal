@@ -10,11 +10,8 @@ import {
     Users,
     UserCircle2,
     LogOut,
-    Clock,
-    Sun,
-    Moon
+    Clock
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -27,7 +24,6 @@ const navItems = [
 ];
 
 export default function AdminSidebar() {
-    const { setTheme, theme } = useTheme();
     const pathname = usePathname();
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
@@ -80,21 +76,8 @@ export default function AdminSidebar() {
                 })}
             </nav>
 
-            {/* Theme Toggle & Logout - Pushed to Bottom */}
+            {/* Logout - Pushed to Bottom */}
             <div className="mt-auto pt-4 border-t border-gray-50 dark:border-slate-800 space-y-2">
-                <button
-                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                    className="flex items-center gap-4 px-4 py-3 w-full text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-900 rounded-xl transition-all group cursor-pointer"
-                >
-                    {theme === "dark" ? (
-                        <Sun className="w-6 h-6 text-emerald-500" />
-                    ) : (
-                        <Moon className="w-6 h-6 text-emerald-600" />
-                    )}
-                    <span className="font-semibold text-[16px]">
-                        {theme === "dark" ? "Light Mode" : "Dark Mode"}
-                    </span>
-                </button>
 
                 <button
                     onClick={handleLogout}
