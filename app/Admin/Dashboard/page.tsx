@@ -93,8 +93,8 @@ export default function AdminDashboard() {
 
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Admin Dashboard</h1>
-                <p className="text-gray-500 mt-1 font-medium text-sm">Manage project applications and platform activity</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Admin Dashboard</h1>
+                <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium text-sm">Manage project applications and platform activity</p>
             </div>
 
             {/* Stats Grid */}
@@ -103,12 +103,12 @@ export default function AdminDashboard() {
                     <Link
                         key={i}
                         href={stat.href}
-                        className={`p-6 rounded-[32px] border ${stat.bgColor} ${stat.borderColor} shadow-sm transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98] group`}
+                        className={`p-6 rounded-[32px] border ${stat.bgColor} dark:bg-opacity-20 ${stat.borderColor} shadow-sm transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98] group`}
                     >
                         <div className="flex justify-between items-start">
                             <div className="space-y-1">
-                                <p className="text-gray-900 text-[10px] font-black uppercase tracking-widest group-hover:text-black transition-colors">{stat.label}</p>
-                                <p className="text-4xl font-black text-gray-900">
+                                <p className="text-gray-900 dark:text-gray-100 text-[10px] font-black uppercase tracking-widest group-hover:text-black dark:group-hover:text-white transition-colors">{stat.label}</p>
+                                <p className="text-4xl font-black text-gray-900 dark:text-white">
                                     {stat.value}
                                 </p>
                             </div>
@@ -124,19 +124,19 @@ export default function AdminDashboard() {
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl font-black text-gray-900 tracking-tight">Project Applications</h2>
-                        <p className="text-gray-500 font-medium text-xs mt-1">Review and manage incoming applications for projects</p>
+                        <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Project Applications</h2>
+                        <p className="text-gray-500 dark:text-gray-400 font-medium text-xs mt-1">Review and manage incoming applications for projects</p>
                     </div>
                 </div>
 
                 {/* Filter & Search Bar - Unified Line */}
-                <div className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-[32px] border border-gray-100 shadow-sm">
+                <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-slate-950 p-4 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-sm">
                     {/* Status Dropdown */}
                     <div className="relative group">
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="appearance-none bg-gray-50 px-8 py-3.5 pr-14 rounded-2xl border border-gray-100 text-slate-800 font-black text-xs outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer hover:bg-white"
+                            className="appearance-none bg-gray-50 dark:bg-slate-900 px-8 py-3.5 pr-14 rounded-2xl border border-gray-100 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-black text-xs outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer hover:bg-white dark:hover:bg-slate-800"
                         >
                             <option value="All">All Status</option>
                             <option value="Pending">Pending</option>
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
                         <select
                             value={typeFilter === 'All' ? 'All' : typeFilter === 'freelancer' ? 'Freelancers' : 'Agencies'}
                             onChange={(e) => setTypeFilter(e.target.value === 'Freelancers' ? 'freelancer' : e.target.value === 'Agencies' ? 'agency' : 'All')}
-                            className="appearance-none bg-gray-50 px-8 py-3.5 pr-14 rounded-2xl border border-gray-100 text-slate-800 font-black text-xs outline-none focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer hover:bg-white"
+                            className="appearance-none bg-gray-50 dark:bg-slate-900 px-8 py-3.5 pr-14 rounded-2xl border border-gray-100 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-black text-xs outline-none focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer hover:bg-white dark:hover:bg-slate-800"
                         >
                             <option value="All">All Categories</option>
                             <option value="Freelancers">Freelancers</option>
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search by name, email or project..."
-                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:bg-white outline-none transition-all text-xs font-bold"
+                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all text-xs font-bold dark:text-white"
                         />
                     </div>
 
@@ -190,11 +190,11 @@ export default function AdminDashboard() {
             </div>
 
             {/* Table Container - Fixed Width Logic */}
-            <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-950 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse table-fixed">
                         <thead>
-                            <tr className="bg-gray-50/50 border-b border-gray-100">
+                            <tr className="bg-gray-50/50 dark:bg-slate-900/50 border-b border-gray-100 dark:border-slate-800">
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Type</th>
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Name</th>
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">Email</th>
@@ -203,9 +203,9 @@ export default function AdminDashboard() {
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                             {filteredRequests.map((req) => (
-                                <tr key={req.id} className="hover:bg-gray-50/30 transition-colors group">
+                                <tr key={req.id} className="hover:bg-gray-50/30 dark:hover:bg-slate-900/30 transition-colors group">
                                     <td className="px-6 py-4 text-center">
                                         <span className={`inline-flex items-center justify-center min-w-[90px] gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${req.applicantRole === 'freelancer' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
                                             {req.applicantRole === 'freelancer' ? <Briefcase className="w-3 h-3" /> : <Building2 className="w-3 h-3" />}
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="max-w-full">
-                                            <p className="font-extrabold text-gray-900 text-sm truncate">{req.applicantName}</p>
+                                            <p className="font-extrabold text-gray-900 dark:text-white text-sm truncate">{req.applicantName}</p>
                                             <p className="text-[10px] text-gray-400 font-bold lg:hidden mt-0.5 truncate">{req.email}</p>
                                             <p className="text-[10px] text-gray-400 font-bold mt-0.5 truncate">For: {req.projectTitle}</p>
                                         </div>

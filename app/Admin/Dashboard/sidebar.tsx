@@ -10,8 +10,11 @@ import {
     Users,
     UserCircle2,
     LogOut,
-    Clock
+    Clock,
+    Sun,
+    Moon
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -24,6 +27,7 @@ const navItems = [
 ];
 
 export default function AdminSidebar() {
+    const { setTheme, theme } = useTheme();
     const pathname = usePathname();
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
@@ -40,10 +44,10 @@ export default function AdminSidebar() {
     };
 
     return (
-        <aside className="w-72 h-screen bg-white border-r border-gray-100 flex flex-col py-8 px-6 sticky top-0">
+        <aside className="w-72 h-screen bg-white dark:bg-slate-950 border-r border-gray-100 dark:border-slate-800 flex flex-col py-8 px-6 sticky top-0 transition-colors duration-300">
             {/* Portal Title */}
             <div className="mb-12 px-4">
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
                     Admin Portal
                 </h1>
             </div>
@@ -60,14 +64,14 @@ export default function AdminSidebar() {
                             className={cn(
                                 "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group",
                                 isActive
-                                    ? "bg-emerald-50 text-emerald-600"
-                                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                    ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
+                                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-gray-900 dark:hover:text-white"
                             )}
                         >
                             <item.icon
                                 className={cn(
                                     "w-6 h-6",
-                                    isActive ? "text-emerald-600" : "text-gray-400 group-hover:text-gray-900"
+                                    isActive ? "text-emerald-600 dark:text-emerald-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white"
                                 )}
                             />
                             <span className="font-semibold text-[16px]">{item.label}</span>
@@ -76,11 +80,25 @@ export default function AdminSidebar() {
                 })}
             </nav>
 
-            {/* Logout - Pushed to Bottom */}
-            <div className="mt-auto pt-4 border-t border-gray-50">
+            {/* Theme Toggle & Logout - Pushed to Bottom */}
+            <div className="mt-auto pt-4 border-t border-gray-50 dark:border-slate-800 space-y-2">
+                <button
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    className="flex items-center gap-4 px-4 py-3 w-full text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-900 rounded-xl transition-all group cursor-pointer"
+                >
+                    {theme === "dark" ? (
+                        <Sun className="w-6 h-6 text-emerald-500" />
+                    ) : (
+                        <Moon className="w-6 h-6 text-emerald-600" />
+                    )}
+                    <span className="font-semibold text-[16px]">
+                        {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                    </span>
+                </button>
+
                 <button
                     onClick={handleLogout}
-                    className="flex items-center gap-4 px-4 py-3 w-full text-red-500 hover:bg-red-50 rounded-xl transition-colors group cursor-pointer"
+                    className="flex items-center gap-4 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors group cursor-pointer"
                 >
                     {/* We check 'mounted' to ensure the Lucide SVG classes match exactly during hydration */}
                     <LogOut

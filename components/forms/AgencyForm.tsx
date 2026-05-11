@@ -1,10 +1,29 @@
 import React, { useState } from 'react'
 import { useRegistration } from '../../context/RegistrationContext'
 
-const AgencyForm = ({ onClose }) => {
+interface AgencyFormProps {
+    onClose: () => void;
+}
+
+interface AgencyFormData {
+    authPersonName: string; designation: string; email: string; phone: string; linkedinUrl: string; headquarters: string; website: string;
+    registeredName: string; gstNumber: string; cin: string; companyPan: string;
+    selectedServices: string[];
+    bimDetails: { softwareStack: string[]; maxLod: string; cdeExperience: string };
+    auditDetails: { equipmentOwned: string; serviceRadius: string };
+    peerReviewDetails: { teamExperience: string; specialisation: string };
+    boqDetails: { measurementStandards: string; estimationSoftware: string };
+    vizDetails: { renderingEngines: string; hardwareCapacity: string; animationCapability: string };
+    portfolioUrl: string; commercialBasis: string; baseRate: string; noticePeriod: string; teamSize: string;
+    declarationAccepted: boolean; signatureName: string; submissionDate: string;
+    portfolioFile?: File | null;
+    portfolioPdfData?: any;
+}
+
+const AgencyForm: React.FC<AgencyFormProps> = ({ onClose }) => {
     const { addRegistration } = useRegistration()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<AgencyFormData>({
         // 1. Identity & Accountability
         authPersonName: '', designation: '', email: '', phone: '', linkedinUrl: '', headquarters: '', website: '',
 
@@ -26,8 +45,9 @@ const AgencyForm = ({ onClose }) => {
         declarationAccepted: false, signatureName: '', submissionDate: new Date().toISOString().split('T')[0]
     })
 
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const target = e.target as HTMLInputElement
+        const { name, value, type, checked } = target
         if (type === 'checkbox' && name === 'declarationAccepted') {
             setFormData(prev => ({ ...prev, [name]: checked }))
         } else {
@@ -35,7 +55,7 @@ const AgencyForm = ({ onClose }) => {
         }
     }
 
-    const handleServiceToggle = (service) => {
+    const handleServiceToggle = (service: string) => {
         setFormData(prev => {
             const services = prev.selectedServices.includes(service)
                 ? prev.selectedServices.filter(s => s !== service)
@@ -44,14 +64,14 @@ const AgencyForm = ({ onClose }) => {
         })
     }
 
-    const handleNestedChange = (section, field, value) => {
+    const handleNestedChange = (section: 'bimDetails' | 'auditDetails' | 'peerReviewDetails' | 'boqDetails' | 'vizDetails', field: string, value: string) => {
         setFormData(prev => ({
             ...prev,
             [section]: { ...prev[section], [field]: value }
         }))
     }
 
-    const handleSoftwareToggle = (software) => {
+    const handleSoftwareToggle = (software: string) => {
         setFormData(prev => {
             const currentStack = prev.bimDetails.softwareStack
             const newStack = currentStack.includes(software)
@@ -61,7 +81,7 @@ const AgencyForm = ({ onClose }) => {
         })
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!formData.declarationAccepted) {
             alert("Please accept the final declaration.")
@@ -103,7 +123,7 @@ const AgencyForm = ({ onClose }) => {
     const labelStyle = "block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2"
 
     // Helper component for Section Headers
-    const SectionHeader = ({ number, title }) => (
+    const SectionHeader = ({ number, title }: { number: string; title: string }) => (
         <h3 className="text-[#6EDD4D] text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-3">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#6EDD4D]/20 text-[#6EDD4D] text-xs">
                 {number}
@@ -389,7 +409,7 @@ const AgencyForm = ({ onClose }) => {
                                         name="portfolioFile"
                                         accept="application/pdf"
                                         onChange={(e) => {
-                                            const file = e.target.files[0];
+                                            const file = e.target.files?.[0];
                                             if (file && file.size > 10 * 1024 * 1024) {
                                                 alert("File is too large! Maximum limit is 10MB. Please compress your PDF or provide a link instead.");
                                                 e.target.value = '';
@@ -401,7 +421,7 @@ const AgencyForm = ({ onClose }) => {
                                                     setFormData(prev => ({
                                                         ...prev,
                                                         portfolioFile: file,
-                                                        portfolioPdfData: event.target.result
+                                                        portfolioPdfData: event.target?.result
                                                     }));
                                                 };
                                                 reader.readAsDataURL(file);
@@ -483,7 +503,7 @@ const AgencyForm = ({ onClose }) => {
                                 onChange={handleInputChange}
                                 className="mt-1 w-5 h-5 accent-[#6EDD4D] bg-zinc-900 border-zinc-700 rounded cursor-pointer"
                             />
-                            <label onClick={() => handleInputChange({ target: { name: 'declarationAccepted', type: 'checkbox', checked: !formData.declarationAccepted } })} className="text-zinc-300 text-sm md:text-base leading-relaxed cursor-pointer select-none">
+                            <label onClick={() => setFormData(prev => ({ ...prev, declarationAccepted: !prev.declarationAccepted }))} className="text-zinc-300 text-sm md:text-base leading-relaxed cursor-pointer select-none">
                                 I hereby certify that all PAN / GST / CIN details provided are authentic. I am authorised to represent this entity and understand that onboarding is subject to a technical audit of my previous work.
                             </label>
                         </div>
